@@ -1,6 +1,7 @@
-import { hasLocale } from "next-intl";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import NavBar from "@/components/NavBar";
 
 type Props = {
   children: React.ReactNode;
@@ -14,5 +15,20 @@ export default async function LocaleLayout({ children, params }: Props) {
     notFound();
   }
 
-  return <div>{children}</div>;
+  return (
+    <html lang={locale}>
+      <head />
+      <body>
+        <NextIntlClientProvider>
+          <div className="relative">
+            <NavBar />
+            <div className="lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px]">
+              {children}
+            </div>
+            <div></div>
+          </div>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
 }

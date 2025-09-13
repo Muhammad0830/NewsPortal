@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { NextIntlClientProvider } from "next-intl";
 
 export const poppins = Poppins({
   subsets: ["latin"],
@@ -21,12 +20,5 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <head />
-      <body className={`${poppins.className} antialiased`}>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
-      </body>
-    </html>
-  );
+  return children;
 }

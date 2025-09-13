@@ -1,6 +1,12 @@
 {
+    "NavBar": {
+        "Home": "Bosh sahifa",
+        "News": "Yangiliklar",
+        "signup": "Ro'yxatdan o'tish",
+        "Select Language": "Tilni tanlang"
+    },
     "Home": {
         "title": "Yangiliklar portali",
-        "description": "So‘nggi yangiliklar haqida servis"
+        "description": "So'nggi yangiliklar haqida servis"
     }
 }

@@ -28,7 +28,7 @@ const LangButton = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="sm:w-10 w-8 aspect-square border rounded-full bg-black border-white/30 sm:p-1.5 p-1 cursor-pointer">
+        <button className="sm:w-10 sm:h-10 w-8 h-8 border rounded-full bg-black border-white/30 sm:p-1.5 p-1 cursor-pointer">
           <Globe className="w-full h-full" color="#fff" />
         </button>
       </DialogTrigger>

@@ -1,25 +1,11 @@
 "use client";
+import useApiQuery from "@/hooks/useApiQiery";
 import { Link } from "@/i18n/navigation";
 import { ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-
-const topNewsImages = [
-  { url: "/images/news1.jpg", title: "Global Markets Rally Today" },
-  {
-    url: "/images/news2.jpg",
-    title:
-      "Local Sports Team Wins Championship and for the first time they have achieved something that they never had",
-  },
-  { url: "/images/news3.jpg", title: "Tech Giants Launch New AI Tool" },
-  {
-    url: "/images/news4.jpg",
-    title:
-      "New Environmental Policies Announced and here is what it is, it is named like a new ",
-  },
-  { url: "/images/news5.jpg", title: "Breakthrough in Renewable Energy" },
-];
+import { News } from "@/types/types";
 
 const categories = [
   {
@@ -124,9 +110,16 @@ const Page = () => {
   const [isPaused, setIsPaused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
+  const [images, setImages] = useState<News[]>([]);
 
-  const images = [...topNewsImages, ...topNewsImages];
   const speed = 1.5;
+
+  const { data, isLoading } = useApiQuery<News[]>("/news", ["news"]);
+  const newsData = data?.filter((item, index) => index < 5) || [];
+
+  useEffect(() => {
+    setImages([...newsData, ...newsData]);
+  }, [data]); // eslint-disable-line
 
   useEffect(() => {
     setWidth(window.innerWidth);
@@ -160,7 +153,9 @@ const Page = () => {
       cancelAnimationFrame(animationFrame);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [isPaused]);
+  }, [isPaused, containerRef.current]); // eslint-disable-line
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px] relative overflow-hidden">
@@ -232,7 +227,7 @@ const Page = () => {
                 }}
               >
                 <Image
-                  src={img.url}
+                  src={`/images/news${index + 1}.jpg`}
                   alt="news"
                   fill
                   className="object-cover group-hover:scale-[1.1] transition-scale duration-300"

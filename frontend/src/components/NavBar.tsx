@@ -10,6 +10,7 @@ import MenuButton from "./Menu";
 const navLinks = [
   { name: "Home", href: "/home" },
   { name: "News", href: "/news" },
+  { name: "Categories", href: "/categories" },
 ];
 
 const NavBar = () => {
@@ -17,9 +18,9 @@ const NavBar = () => {
   const pathName = usePathname();
 
   return (
-    <div className="w-full flex gap-4 justify-between items-center z-[999] bg-[#222222] lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px] py-[15px]">
+    <div className="fixed w-full flex gap-4 justify-between items-center z-[999] shadow-[0px_0px_15px_1px_#00000050] dark:shadow-[0px_0px_15px_1px_#ffffff50] bg-[#ffffff50] dark:bg-[#00000050] backdrop-blur-md lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px] py-[15px]">
       <div>
-        <span className="lg:text-[28px] sm:text-[24px] font-semibold text-[20px] text-white">
+        <span className="lg:text-[28px] sm:text-[24px] font-semibold text-[20px] text-black dark:text-white">
           News Portal
         </span>
       </div>
@@ -30,8 +31,10 @@ const NavBar = () => {
             <li className="list-none" key={index}>
               <Link
                 className={cn(
-                  "group relative text-white",
-                  pathName === link.href && "text-primary"
+                  "group relative font-semibold",
+                  pathName === link.href
+                    ? "text-primary"
+                    : "text-black dark:text-white"
                 )}
                 href={link.href}
               >
@@ -54,7 +57,9 @@ const NavBar = () => {
         <Link
           className={cn(
             "sm:flex hidden text-sm md:text-[16px] relative group text-white",
-            pathName.startsWith("/auth") && "text-primary"
+            pathName.startsWith("/auth")
+              ? "text-primary"
+              : "text-black dark:text-white"
           )}
           href={"/auth?mode=signup"}
         >

@@ -9,6 +9,7 @@ import React, { useState } from "react";
 const navLinks = [
   { name: "Home", href: "/home" },
   { name: "News", href: "/news" },
+  { name: "Categories", href: "/categories" },
 ];
 
 const MenuButton = () => {
@@ -22,23 +23,21 @@ const MenuButton = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "z-20 overflow-hidden relative flex items-center justify-center sm:hidden w-8 aspect-square cursor-pointer border border-white/30 p-1 rounded-full transition-colors duration-300",
-          isOpen ? "bg-red-500" : "bg-black"
+          "z-20 overflow-hidden relative flex items-center justify-center sm:hidden w-8 aspect-square cursor-pointer border border-black/40 dark:border-white/30 p-1 rounded-full transition-colors duration-300",
+          isOpen ? "bg-red-500" : "bg-white dark:bg-black"
         )}
       >
         <Menu
           className={cn(
-            "relative w-full h-full transition-translate duration-300",
+            "relative w-full h-full transition-translate duration-300 text-black dark:text-white",
             isOpen ? "translate-x-[-150%]" : "translate-x-0"
           )}
-          color="#fff"
         />
         <X
           className={cn(
-            "absolute w-[80%] h-[80%] transition-translate duration-300",
+            "absolute w-[80%] h-[80%] transition-translate duration-300 text-black dark:text-white",
             isOpen ? "translate-x-0" : "translate-x-[150%]"
           )}
-          color="#fff"
         />
       </button>
       <div

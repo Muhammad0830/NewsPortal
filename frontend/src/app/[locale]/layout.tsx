@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import NavBar from "@/components/NavBar";
 import { ThemeProvider } from "next-themes";
-
+import Providers from "@/context/QueryClientContext";
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -21,17 +21,19 @@ export default async function LocaleLayout({ children, params }: Props) {
       <head />
       <body>
         <NextIntlClientProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            disableTransitionOnChange
-          >
-            <div className="min-h-screen w-full">
-              <NavBar />
-              <div className="relative">{children}</div>
-              <div></div>
-            </div>
-          </ThemeProvider>
+          <Providers>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              disableTransitionOnChange
+            >
+              <div className="min-h-screen w-full">
+                <NavBar />
+                <div className="relative">{children}</div>
+                <div></div>
+              </div>
+            </ThemeProvider>
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

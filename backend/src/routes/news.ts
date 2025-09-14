@@ -11,7 +11,7 @@ newsRouter.get("/", async (req: any, res: any) => {
       res.status(404).json({ error: "No news found" });
     }
 
-    res.status(200).json({ data: rows });
+    res.status(200).json(rows);
   } catch (error: any) {
     if (res.status) {
       res.status(500).json({ error: error.message });

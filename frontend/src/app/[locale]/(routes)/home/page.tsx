@@ -5,102 +5,8 @@ import { ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import { News } from "@/types/types";
-
-const categories = [
-  {
-    name: "Technology",
-    category: "technology",
-    description: "Latest trends in tech, gadgets, AI, and digital innovation.",
-    color: "#BAE6FD", // sky-200
-  },
-  {
-    name: "Sports",
-    category: "sports",
-    description: "Scores, highlights, and stories from global sports events.",
-    color: "#FDE68A", // yellow-300
-  },
-  {
-    name: "Environment",
-    category: "environment",
-    description: "News on climate change, nature, and sustainable living.",
-    color: "#86EFAC", // green-300
-  },
-  {
-    name: "Politics",
-    category: "politics",
-    description: "Updates on government, elections, and global policies.",
-    color: "#D8B4FE", // purple-300
-  },
-  {
-    name: "Health",
-    category: "health",
-    description: "Medical research, wellness tips, and healthcare news.",
-    color: "#FDA4AF", // rose-300
-  },
-  {
-    name: "Business",
-    category: "business",
-    description: "Markets, economy, startups, and corporate updates.",
-    color: "#7DD3FC", // sky-300
-  },
-  {
-    name: "Science",
-    category: "science",
-    description:
-      "Discoveries, space exploration, and scientific breakthroughs.",
-    color: "#A5B4FC", // indigo-300
-  },
-  {
-    name: "World",
-    category: "world",
-    description: "International headlines and global affairs coverage.",
-    color: "#FDBA74", // orange-300
-  },
-  {
-    name: "Education",
-    category: "education",
-    description: "Learning, schools, universities, and education reforms.",
-    color: "#5EEAD4", // teal-300
-  },
-  {
-    name: "Entertainment",
-    category: "entertainment",
-    description: "Movies, TV shows, celebrities, and pop culture buzz.",
-    color: "#F9A8D4", // pink-300
-  },
-  {
-    name: "Travel",
-    category: "travel",
-    description: "Guides, destinations, and travel experiences worldwide.",
-    color: "#FCD34D", // amber-300
-  },
-  {
-    name: "Food",
-    category: "food",
-    description: "Recipes, culinary trends, and dining culture updates.",
-    color: "#FDBA74", // orange-300
-  },
-  {
-    name: "Fashion",
-    category: "fashion",
-    description:
-      "Trends, designers, and style inspiration from around the world.",
-    color: "#D1D5DB", // gray-300
-  },
-  {
-    name: "Culture",
-    category: "culture",
-    description: "Art, literature, traditions, and cultural perspectives.",
-    color: "#93C5FD", // blue-300
-  },
-  {
-    name: "Opinion",
-    category: "opinion",
-    description: "Expert commentary, editorials, and personal viewpoints.",
-    color: "#FCA5A5", // red-300
-  },
-];
+import { News, Category } from "@/types/types";
+import { cn } from "@/lib/cn";
 
 const CARD_WIDTH = 30;
 const GAP = 2;
@@ -111,15 +17,23 @@ const Page = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const [images, setImages] = useState<News[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const speed = 1.5;
 
   const { data, isLoading } = useApiQuery<News[]>("/news", ["news"]);
   const newsData = data?.filter((item, index) => index < 5) || [];
 
+  const { data: categoriesData, isLoading: isCategoryLoading } = useApiQuery<
+    Category[]
+  >("/news/categories", ["category"]);
+
   useEffect(() => {
     setImages([...newsData, ...newsData]);
-  }, [data]); // eslint-disable-line
+    if (categoriesData) setCategories(categoriesData);
+  }, [data, categoriesData]); // eslint-disable-line
+
+  console.log("categoriesData", categoriesData);
 
   useEffect(() => {
     setWidth(window.innerWidth);
@@ -251,7 +165,12 @@ const Page = () => {
       </section>
 
       {/* categories section */}
-      <section className="flex flex-col gap-4 lg:mt-20 md:mt-10 mt-4 mb-4">
+      <section
+        className={cn(
+          "flex-col gap-4 lg:mt-20 md:mt-10 mt-4 mb-4",
+          !categories || categories.length <= 0 ? "hidden" : "flex"
+        )}
+      >
         <div className="lg:text-3xl md:text-xl text-lg font-semibold">
           {t("Category")}
         </div>
@@ -260,27 +179,31 @@ const Page = () => {
             {t("You can find any news of your interest here")}
           </div>
           <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 lg:gap-4 md:gap-3 gap-2">
-            {categories.map((categ, index) => {
-              if (index >= 7) return null;
+            {isCategoryLoading ? (
+              <div>Loading the categories data...</div>
+            ) : (
+              categories?.map((categ, index) => {
+                if (index >= 7) return null;
 
-              return (
-                <Link
-                  className="px-2 py-0.5 rounded-sm text-black"
-                  style={{
-                    backgroundColor: categ.color,
-                  }}
-                  key={index}
-                  href={`/news/${categ.category}`}
-                >
-                  <h5 className="text-lg font-semibold sm:text-start text-center">
-                    {t(`${categ.name}`)}
-                  </h5>
-                  <p className="text-[16px] sm:flex hidden">
-                    {t(`${categ.description}`)}
-                  </p>
-                </Link>
-              );
-            })}
+                return (
+                  <Link
+                    className="px-2 py-0.5 rounded-sm text-black"
+                    style={{
+                      backgroundColor: categ.color,
+                    }}
+                    key={index}
+                    href={`/news?category=${categ.category}`}
+                  >
+                    <h5 className="text-lg font-semibold sm:text-start text-center">
+                      {t(`${categ.name}`)}
+                    </h5>
+                    <p className="text-[16px] sm:flex hidden">
+                      {t(`${categ.description}`)}
+                    </p>
+                  </Link>
+                );
+              })
+            )}
             <Link
               className="px-2 py-0.5 rounded-sm text-black flex items-center justify-center gap-2"
               style={{

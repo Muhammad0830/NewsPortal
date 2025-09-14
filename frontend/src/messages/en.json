@@ -32,6 +32,21 @@
         "See more": "See more",
         "Category": "Category",
         "You can find any news of your interest here": "You can find any news of your interest here",
-        "More": "More"
+        "More": "More",
+        "technologyDescription": "Latest trends in tech, gadgets, AI, and digital innovation.",
+        "sportsDescription": "Scores, highlights, and stories from global sports events.",
+        "environmentDescription": "News on climate change, nature, and sustainable living.",
+        "politicsDescription": "Updates on government, elections, and global policies.",
+        "healthDescription": "Medical research, wellness tips, and healthcare news.",
+        "businessDescription": "Markets, economy, startups, and corporate updates.",
+        "scienceDescription": "Discoveries, space exploration, and scientific breakthroughs.",
+        "worldDescription": "International headlines and global affairs coverage.",
+        "educationDescription": "Learning, schools, universities, and education reforms.",
+        "entertainmentDescription": "Movies, TV shows, celebrities, and pop culture buzz.",
+        "travelDescription": "Guides, destinations, and travel experiences worldwide.",
+        "foodDescription": "Recipes, culinary trends, and dining culture updates.",
+        "fashionDescription": "Trends, designers, and style inspiration from around the world.",
+        "cultureDescription": "Art, literature, traditions, and cultural perspectives.",
+        "opinionDescription": "Expert commentary, editorials, and personal viewpoints."
     }
 }

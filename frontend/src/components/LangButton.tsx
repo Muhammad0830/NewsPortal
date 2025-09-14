@@ -28,8 +28,8 @@ const LangButton = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="sm:w-10 sm:h-10 w-8 h-8 border rounded-full bg-black border-white/30 sm:p-1.5 p-1 cursor-pointer">
-          <Globe className="w-full h-full" color="#fff" />
+        <button className="sm:w-10 sm:h-10 w-8 h-8 border rounded-full bg-[#ffffff] dark:bg-black border-black/40 dark:border-white/30 sm:p-1.5 p-1 cursor-pointer">
+          <Globe className="w-full h-full text-black dark:text-white" />
         </button>
       </DialogTrigger>
       <DialogContent aria-describedby={undefined} className="p-4 w-auto">

@@ -23,25 +23,23 @@ const DarkLightMode = () => {
   return (
     <button
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="relative border border-white/30 sm:h-10 h-8 aspect-square bg-black overflow-hidden rounded-full sm:p-1.5 p-1 cursor-pointer flex justify-center items-center"
+      className="relative border sm:h-10 h-8 aspect-square bg-[#ffffff] dark:bg-black border-black/40 dark:border-white/30 overflow-hidden rounded-full sm:p-1.5 p-1 cursor-pointer flex justify-center items-center"
     >
       <Moon
         className={cn(
-          "relative w-full h-full transition-translate duration-300",
+          "relative w-full h-full transition-translate duration-300 text-black dark:text-white",
           isLight
             ? "sm:translate-y-0 sm:opacity-100 opacity-100"
             : "sm:translate-y-[150%] sm:opacity-100 opacity-0"
         )}
-        color="#fff"
       />
       <Sun
         className={cn(
-          "absolute w-[80%] h-[80%] transition-translate duration-300",
+          "absolute w-[80%] h-[80%] transition-translate duration-300 text-black dark:text-white",
           isLight
             ? "sm:translate-y-[-150%] sm:opacity-100 opacity-0"
             : "sm:translate-y-0 sm:opacity-100 opacity-100"
         )}
-        color="#fff"
       />
       <div className="absolute"></div>
     </button>

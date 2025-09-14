@@ -1,0 +1,35 @@
+.animateshadows {
+  animation: animateShadows 5s 2s linear infinite;
+}
+
+.animateshadows2 {
+  animation: animateShadows2 5s 2.3s linear infinite;
+}
+
+.animateshadows3 {
+  animation: animateShadows 5s 4s linear infinite;
+}
+
+.animateshadows4 {
+  animation: animateShadows2 5s 4.3s linear infinite;
+}
+
+@keyframes animateShadows {
+  0% {
+    top: -60%;
+  }
+  20%,
+  100% {
+    top: 230%;
+  }
+}
+
+@keyframes animateShadows2 {
+  0% {
+    top: -60%;
+  }
+  20%,
+  100% {
+    top: 230%;
+  }
+}

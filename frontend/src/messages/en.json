@@ -3,10 +3,35 @@
         "Home": "Home",
         "News": "News",
         "signup": "Sign Up",
-        "Select Language": "Select Language"
+        "Select Language": "Select Language",
+        "Categories": "Categories"
     },
     "Home": {
+        "Top News Portal": "Top News Portal",
+        "Stay updated with the latest news": "Stay updated with the latest news",
         "title": "News Portal",
-        "description": "Service for tracking the news of the world"
+        "BeTheFirst": "Be the first to know the hottest news.",
+        "goto_news": "Go to News",
+        "Latest Top News": "Latest Top News",
+        "Technology": "Technology",
+        "Sports": "Sports",
+        "Environment": "Environment",
+        "Politics": "Politics",
+        "Health": "Health",
+        "Business": "Business",
+        "Science": "Science",
+        "World": "World",
+        "Education": "Education",
+        "Entertainment": "Entertainment",
+        "Travel": "Travel",
+        "Food": "Food",
+        "Fashion": "Fashion",
+        "Culture": "Culture",
+        "Opinion": "Opinion",
+        "More categories": "More categories",
+        "See more": "See more",
+        "Category": "Category",
+        "You can find any news of your interest here": "You can find any news of your interest here",
+        "More": "More"
     }
 }

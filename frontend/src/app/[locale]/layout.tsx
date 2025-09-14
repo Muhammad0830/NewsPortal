@@ -24,14 +24,11 @@ export default async function LocaleLayout({ children, params }: Props) {
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
-            enableSystem
             disableTransitionOnChange
           >
-            <div className="relative">
+            <div className="min-h-screen w-full">
               <NavBar />
-              <div className="lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px]">
-                {children}
-              </div>
+              <div className="relative">{children}</div>
               <div></div>
             </div>
           </ThemeProvider>

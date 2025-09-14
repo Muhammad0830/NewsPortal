@@ -6,3 +6,11 @@ export interface News {
   image: string;
   category: string;
 }
+
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  color: string;
+  category: string;
+}

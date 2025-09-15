@@ -33,8 +33,6 @@ const Page = () => {
     if (categoriesData) setCategories(categoriesData);
   }, [data, categoriesData]); // eslint-disable-line
 
-  console.log("categoriesData", categoriesData);
-
   useEffect(() => {
     setWidth(window.innerWidth);
   }, []);

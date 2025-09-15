@@ -5,6 +5,8 @@ export interface News {
   url: string;
   image: string;
   category: string;
+  created_at: string;
+  newsText: string;
 }
 
 export interface Category {

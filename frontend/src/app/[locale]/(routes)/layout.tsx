@@ -13,7 +13,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       <head />
       <body>
         <BackgroundComponent />
-        <div>{children}</div>
+        <div className="relative">{children}</div>
       </body>
     </html>
   );

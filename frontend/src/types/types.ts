@@ -16,3 +16,31 @@ export interface Category {
   color: string;
   category: string;
 }
+
+export type ContentItem =
+  | {
+      type: "title" | "newsText";
+      content: string;
+      order: number;
+    }
+  | {
+      type: "image";
+      content: string[];
+      order: number;
+    }
+  | {
+      type: "link";
+      content: {
+        label: string;
+        url: string;
+      };
+      order: number;
+    };
+
+export interface NewsData {
+  mainTitle: string;
+  mainNewsText: string;
+  mainImage: string;
+  contents: ContentItem[];
+  link: string;
+}

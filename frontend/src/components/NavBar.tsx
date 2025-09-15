@@ -32,7 +32,7 @@ const NavBar = () => {
               <Link
                 className={cn(
                   "group relative font-semibold",
-                  pathName === link.href
+                  pathName.startsWith(link.href)
                     ? "text-primary"
                     : "text-black dark:text-white"
                 )}
@@ -42,7 +42,7 @@ const NavBar = () => {
                 <span
                   className={cn(
                     "absolute bottom-0 h-[2px] bg-primary rounded-full transition-all duration-300",
-                    pathName == link.href
+                    pathName.startsWith(link.href)
                       ? "left-[50%] right-[59%]"
                       : "left-[50%] right-[50%] group-hover:left-0 group-hover:right-0"
                   )}

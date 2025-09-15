@@ -1,7 +1,8 @@
 "use client";
 import useApiQuery from "@/hooks/useApiQiery";
-import { News } from "@/types/types";
-import { ArrowLeft, Link } from "lucide-react";
+import { Link } from "@/i18n/navigation";
+import { NewsData } from "@/types/types";
+import { ArrowLeft, Link as LinkIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -11,66 +12,21 @@ const Page = () => {
   const params = useParams();
   const id = params?.id;
   const t = useTranslations("News");
-  const [news, setNews] = useState<News | null>(null);
+  const [news, setNews] = useState<NewsData | null>(null);
 
-  const { data: newsData, isLoading } = useApiQuery<News>(`/news/each/${id}`, [
-    "EachNews",
-  ]);
+  const { data: newsData, isLoading } = useApiQuery<NewsData>(
+    `/news/each/${1}`,
+    ["EachNews"]
+  );
 
   useEffect(() => {
     if (newsData) setNews(newsData);
   }, [newsData]);
 
-  // if (isLoading) return <div className="pt-20">Loading...</div>;
+  if (isLoading) return <div className="pt-20">Loading...</div>;
 
-  // if (!id || !news)
-  //   return <div className="pt-20">{t("No such news found")}</div>;
-
-  const data = {
-    mainTitle: "mainTitle",
-    mainNewsText: "mainNewsText",
-    mainImage: "/images/news1.jpg",
-    contents: [
-      { type: "title", content: "title1", order: 1 },
-      {
-        type: "newsText",
-        content: "newsText1",
-        order: 2,
-      },
-      {
-        type: "image",
-        content: [
-          "/images/news1.jpg",
-          "/images/news2.jpg",
-          "/images/news2.jpg",
-        ],
-        order: 3,
-      },
-      {
-        type: "title",
-        content: "title2",
-        order: 4,
-      },
-      {
-        type: "image",
-        content: ["/images/news3.jpg"],
-        order: 7,
-      },
-      {
-        type: "image",
-        content: ["/images/news4.jpg"],
-        order: 6,
-      },
-      { type: "link", content: "Read more", order: 5 },
-      {
-        type: "newsText",
-        content: "newsText2",
-        order: 8,
-      },
-    ],
-  };
-
-  const ordewredContents = data.contents.sort((a, b) => a.order - b.order);
+  if (!id || !news)
+    return <div className="pt-20">{t("No such news found")}</div>;
 
   return (
     <div className="pt-20 lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px]">
@@ -82,18 +38,18 @@ const Page = () => {
           <span className="font-semibold">{t("Go back to news")}</span>
         </button>
       </div>
-      <div className="w-full mt-5 shadow-[0px_0px_30px_2px_#000000] rounded-md p-2">
-        <div className="relative lg:min-w-[800px] sm:min-w-[500px] min-w-[200px] sm:w-[65vw] w-[100%] max-w-[600px] aspect-video mx-auto rounded-md overflow-hidden">
+      <div className="w-full mt-5 shadow-[0px_0px_30px_2px_#000000] rounded-md p-2 mb-6">
+        <div className="mb-3 relative lg:min-w-[800px] lg:max-h-[300px] sm:min-w-[500px] min-w-[200px] sm:w-[65vw] w-[100%] max-w-[600px] aspect-video mx-auto rounded-md overflow-hidden">
           <Image
-            src={`/images/news${Number(id) + 1}.jpg`}
+            src={"/images/news1.jpg"}
             alt="news"
             fill
             className="object-cover"
           />
         </div>
-        <div className="sm:text-2xl text-xl font-bold">{data.mainTitle}</div>
+        <div className="sm:text-2xl text-xl font-bold">{news.mainTitle}</div>
         <div className="flex flex-col gap-2">
-          {ordewredContents.map((c, index) => {
+          {news.contents.map((c, index) => {
             switch (c.type) {
               case "title":
                 return (
@@ -109,13 +65,16 @@ const Page = () => {
                 );
               case "link":
                 return (
-                  <div
+                  <Link
+                    href={c.content.url}
                     className="text-primary flex gap-1 items-center"
                     key={index}
                   >
-                    <Link className="sm:w-4 w-3.5 aspect-square" />
-                    <span className="sm:text-[16px] text-sm">{c.content}</span>
-                  </div>
+                    <LinkIcon className="sm:w-4 w-3.5 aspect-square" />
+                    <span className="sm:text-[16px] text-sm">
+                      {c.content.label}
+                    </span>
+                  </Link>
                 );
               case "image":
                 if (c.content) {
@@ -135,12 +94,12 @@ const Page = () => {
                     );
                   } else if (c.content.length > 1 && Array.isArray(c.content)) {
                     return (
-                      <div className="flex flex-col items-center">
+                      <div className="flex flex-col items-center" key={index}>
                         <div className="lg:max-w-[1200px] w-full sm:grid grid-cols-2 flex flex-col md:gap-4 ld:gap-6 gap-2">
-                          {c.content.map((img, index) => (
+                          {c.content.map((img, indexImage) => (
                             <div
                               className="sm:w-auto w-[70vw] max-sm:mx-auto relative aspect-video overflow-hidden rounded-md"
-                              key={index}
+                              key={indexImage}
                             >
                               <Image
                                 className="object-cover"

@@ -134,7 +134,6 @@ const Page = () => {
                       </div>
                     );
                   } else if (c.content.length > 1 && Array.isArray(c.content)) {
-                    console.log("c.content", c.content);
                     return (
                       <div className="flex flex-col items-center">
                         <div className="lg:max-w-[1200px] w-full sm:grid grid-cols-2 flex flex-col md:gap-4 ld:gap-6 gap-2">

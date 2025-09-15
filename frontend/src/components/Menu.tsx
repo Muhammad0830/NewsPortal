@@ -48,7 +48,7 @@ const MenuButton = () => {
       >
         <ul className="flex flex-col items-center justify-start gap-2 p-2 rounded-md">
           {navLinks.map((link, index) => (
-            <li key={index} className="">
+            <li key={index}>
               <Link
                 className={cn(
                   "group relative text-nowrap",
@@ -70,6 +70,27 @@ const MenuButton = () => {
               </Link>
             </li>
           ))}
+          <li>
+            <Link
+              className={cn(
+                "group relative text-nowrap",
+                currentPath.startsWith("auth")
+                  ? "text-primary"
+                  : "text-white dark:text-black"
+              )}
+              href="/auth?mode=signup"
+            >
+              {t("signup")}
+              <span
+                className={cn(
+                  "absolute bottom-0 h-[2px] bg-primary rounded-full transition-all duration-300",
+                  currentPath.startsWith("auth")
+                    ? "left-[50%] right-[59%]"
+                    : "left-[50%] right-[50%] group-hover:left-0 group-hover:right-0"
+                )}
+              ></span>
+            </Link>
+          </li>
         </ul>
       </div>
     </div>

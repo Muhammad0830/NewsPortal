@@ -23,7 +23,7 @@ const DarkLightMode = () => {
   return (
     <button
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="relative border sm:h-10 h-8 aspect-square bg-[#ffffff] dark:bg-black border-black/40 dark:border-white/30 overflow-hidden rounded-full sm:p-1.5 p-1 cursor-pointer flex justify-center items-center"
+      className="relative border sm:h-10 h-8 aspect-square z-10 dark:bg-black border-black/40 dark:border-white/30 overflow-hidden rounded-full sm:p-1.5 p-1 cursor-pointer flex justify-center items-center"
     >
       <Moon
         className={cn(

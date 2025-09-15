@@ -87,5 +87,21 @@
         "Read more": "Read more",
         "Go back to news": "Go back to news",
         "No such news found": "No such news found"
+    },
+    "Auth": {
+        "Sign Up": "Sign Up",
+        "Sign In": "Sign In",
+        "Create an account to access all features": "Create an account to access all features",
+        "Welcome back": "Welcome back",
+        "Enter your details below": "Enter your details below",
+        "Name": "Name",
+        "Email": "Email",
+        "Password": "Password",
+        "Register": "Register",
+        "Login": "Login",
+        "Already have an Account?": "Already have an Account?",
+        "Don't have an Account": "Don't have an Account?",
+        "sign in": "sign in",
+        "sign up": "sign up"
     }
 }

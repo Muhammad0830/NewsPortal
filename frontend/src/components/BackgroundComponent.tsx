@@ -5,8 +5,6 @@ import React, { useEffect, useState } from "react";
 const BackgroundComponent = () => {
   const { theme } = useTheme();
   const [mode, setMode] = useState<"light" | "dark" | null>(null);
-  console.log("mode", mode);
-  console.log("theme", theme);
 
   useEffect(() => {
     if (theme === "light") {

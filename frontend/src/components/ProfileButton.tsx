@@ -118,7 +118,7 @@ const ProfileButton = () => {
           {user.user.role === "admin" && (
             <li className="text-start w-full flex flex-col">
               <Link
-                href={"/admin"}
+                href={"/admin/dashboard"}
                 className={cn(
                   "group relative text-start w-full text-nowrap dark:text-white text-black px-2 py-1 rounded-sm dark:hover:bg-[#272727] hover:bg-[#e1e1e1]"
                 )}

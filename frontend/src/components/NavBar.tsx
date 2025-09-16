@@ -16,6 +16,7 @@ const navLinks = [
 const NavBar = () => {
   const t = useTranslations("NavBar");
   const pathName = usePathname();
+  console.log("pathName", pathName.startsWith("/auth"));
 
   return (
     <div className="fixed w-full flex gap-4 justify-between items-center z-[999] shadow-[0px_0px_15px_1px_#00000050] dark:shadow-[0px_0px_15px_1px_#ffffff50] bg-[#ffffff50] dark:bg-[#00000050] backdrop-blur-md lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px] py-[15px]">

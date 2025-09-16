@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import LangButton from "./LangButton";
 import DarkLightMode from "./DarkLightMode";
 import MenuButton from "./Menu";
+import ProfileButton from "./ProfileButton";
 
 const navLinks = [
   { name: "Home", href: "/home" },
@@ -78,6 +79,7 @@ const NavBar = () => {
           <LangButton />
           <DarkLightMode />
           <MenuButton />
+          <ProfileButton />
         </div>
       </div>
     </div>

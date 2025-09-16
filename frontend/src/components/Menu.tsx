@@ -19,7 +19,7 @@ const MenuButton = () => {
   const currentPath = pathName.split("/")[2];
 
   return (
-    <div className="relative">
+    <div className="relative sm:hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(

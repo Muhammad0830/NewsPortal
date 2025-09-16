@@ -44,3 +44,13 @@ export interface NewsData {
   contents: ContentItem[];
   link: string;
 }
+
+export type User = {
+  user: {
+    id: number;
+    email: string;
+    name: string;
+    image: string;
+    role: "admin" | "user";
+  };
+};

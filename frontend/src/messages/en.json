@@ -5,7 +5,11 @@
         "signup": "Sign Up",
         "Select Language": "Select Language",
         "Categories": "Categories",
-        "profile": "Profile"
+        "profile": "Profile",
+        "Logout": "Logout",
+        "Admin": "Admin",
+        "Are you sure you want to logout": "Are you sure you want to logout?",
+        "Cancel": "Cancel"
     },
     "Home": {
         "Top News Portal": "Top News Portal",
@@ -92,6 +96,7 @@
     "Auth": {
         "Sign Up": "Sign Up",
         "Sign In": "Sign In",
+        "Sign In as Admin": "Sign in as Admin",
         "Create an account to access all features": "Create an account to access all features",
         "Welcome back": "Welcome back",
         "Enter your details below": "Enter your details below",
@@ -103,6 +108,7 @@
         "Already have an Account?": "Already have an Account?",
         "Don't have an Account": "Don't have an Account?",
         "sign in": "sign in",
-        "sign up": "sign up"
+        "sign up": "sign up",
+        "Sign in as:": "Sign in as:"
     }
 }

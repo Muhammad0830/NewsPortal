@@ -7,6 +7,7 @@ import LangButton from "./LangButton";
 import DarkLightMode from "./DarkLightMode";
 import MenuButton from "./Menu";
 import ProfileButton from "./ProfileButton";
+import { useAuth } from "@/context/authContext";
 
 const navLinks = [
   { name: "Home", href: "/home" },
@@ -17,7 +18,9 @@ const navLinks = [
 const NavBar = () => {
   const t = useTranslations("NavBar");
   const pathName = usePathname();
-  console.log("pathName", pathName.startsWith("/auth"));
+  const { user } = useAuth();
+
+  if (pathName === "/") return;
 
   return (
     <div className="fixed w-full flex gap-4 justify-between items-center z-[999] shadow-[0px_0px_15px_1px_#00000050] dark:shadow-[0px_0px_15px_1px_#ffffff50] bg-[#ffffff50] dark:bg-[#00000050] backdrop-blur-md lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px] py-[15px]">
@@ -56,25 +59,27 @@ const NavBar = () => {
       </nav>
 
       <div className="flex items-center gap-4">
-        <Link
-          className={cn(
-            "sm:flex hidden text-sm md:text-[16px] relative group text-white",
-            pathName.startsWith("/auth")
-              ? "text-primary"
-              : "text-black dark:text-white"
-          )}
-          href={"/auth?mode=signup"}
-        >
-          {t("signup")}
-          <span
+        {!user ? (
+          <Link
             className={cn(
-              "absolute bottom-0 h-[2px] bg-primary rounded-full transition-all duration-300",
+              "sm:flex hidden text-sm md:text-[16px] relative group text-white",
               pathName.startsWith("/auth")
-                ? "left-[50%] right-[59%]"
-                : "left-[50%] right-[50%] group-hover:left-0 group-hover:right-0"
+                ? "text-primary"
+                : "text-black dark:text-white"
             )}
-          ></span>
-        </Link>
+            href={"/auth?mode=signup"}
+          >
+            {t("signup")}
+            <span
+              className={cn(
+                "absolute bottom-0 h-[2px] bg-primary rounded-full transition-all duration-300",
+                pathName.startsWith("/auth")
+                  ? "left-[50%] right-[59%]"
+                  : "left-[50%] right-[50%] group-hover:left-0 group-hover:right-0"
+              )}
+            ></span>
+          </Link>
+        ) : null}
         <div className="flex gap-2">
           <LangButton />
           <DarkLightMode />

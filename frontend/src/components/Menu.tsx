@@ -16,6 +16,7 @@ const MenuButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("NavBar");
   const pathName = usePathname();
+
   const currentPath = pathName.split("/")[2];
 
   return (

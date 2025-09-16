@@ -7,21 +7,17 @@ import {
   registerUser,
 } from "@/services/auth";
 import { usePathname } from "next/navigation";
-
-type User = {
-  user: {
-    id: number;
-    email: string;
-    name: string;
-    image: string;
-  };
-};
+import { User } from "@/types/types";
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   error: "login" | "signup" | "logout" | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    role?: "admin" | "user"
+  ) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   setError: React.Dispatch<
@@ -55,11 +51,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       .finally(() => setLoading(false));
   }, [pathname]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string,
+    role?: "admin" | "user"
+  ) => {
     try {
-      await loginUser({ email, password });
+      const updatedRole = role || "user";
+      await loginUser({ email, password, role: updatedRole });
       const u = await getProfile();
       setUser(u);
+      console.log('working')
       setSuccess("login");
     } catch (err: unknown) {
       setError("login");

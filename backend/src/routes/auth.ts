@@ -12,15 +12,13 @@ import * as RTModel from "../models/refreshToken";
 const authRouter = express.Router();
 
 const COOKIE_NAME = "refreshToken";
-const REFRESH_EXPIRES_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+const REFRESH_EXPIRES_MS = 1000 * 60 * 60 * 24 * 7;
 
-// POST /api/auth/signup
 authRouter.post(
   "/signup",
   body("email").isEmail(),
   body("password").isLength({ min: 6 }),
   async (req: any, res: any) => {
-    console.log('req.body', req.body)
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
@@ -31,18 +29,24 @@ authRouter.post(
       name?: string;
     };
 
+    const role = "user"; //signup is possible only for users --- admins are created at adminPage
+
     try {
-      const existing = await UserModel.findUserByEmail(email);
+      const existing = await UserModel.findUserByEmail(email, role);
       if (existing)
         return res.status(409).json({ message: "Email already in use" });
 
       const passwordHash = await bcrypt.hash(password, 10);
-      const userId = await UserModel.createUser(email, passwordHash, name);
+      const userId = await UserModel.createUser(
+        email,
+        passwordHash,
+        name,
+        role
+      );
 
-      const accessToken = createAccessToken({ userId, email });
-      const refreshToken = createRefreshToken({ userId, email });
+      const accessToken = createAccessToken({ userId, email, role });
+      const refreshToken = createRefreshToken({ userId, email, role });
 
-      // compute expires_at for DB
       const expiresAt = new Date(Date.now() + REFRESH_EXPIRES_MS)
         .toISOString()
         .slice(0, 19)
@@ -50,7 +54,6 @@ authRouter.post(
 
       await RTModel.saveRefreshToken(userId, refreshToken, expiresAt);
 
-      // set httpOnly cookie
       res.cookie(COOKIE_NAME, refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -74,29 +77,34 @@ authRouter.post(
   body("password").isLength({ min: 6 }),
   async (req: any, res: any) => {
     const errors = validationResult(req);
-    console.log('errors', errors)
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
 
-    const { email, password } = req.body as { email: string; password: string };
+    const { email, password } = req.body as {
+      email: string;
+      password: string;
+      role: "admin" | "user";
+    };
+    console.log("req.body", req.body);
+
+    const role: "admin" | "user" = req.body.role || "user";
 
     try {
-      const user = await UserModel.findUserByEmail(email);
+      const user = await UserModel.findUserByEmail(email, role);
       if (!user)
         return res.status(401).json({ message: "Invalid credentials" });
 
       const ok = await bcrypt.compare(password, user.password_hash);
       if (!ok) return res.status(401).json({ message: "Invalid credentials" });
 
-      const accessToken = createAccessToken({ userId: user.id, email });
-      const refreshToken = createRefreshToken({ userId: user.id, email });
+      const accessToken = createAccessToken({ userId: user.id, email, role });
+      const refreshToken = createRefreshToken({ userId: user.id, email, role });
 
       const expiresAt = new Date(Date.now() + REFRESH_EXPIRES_MS)
         .toISOString()
         .slice(0, 19)
         .replace("T", " ");
 
-      // Save refresh token
       await RTModel.saveRefreshToken(user.id, refreshToken, expiresAt);
 
       res.cookie(COOKIE_NAME, refreshToken, {
@@ -108,7 +116,12 @@ authRouter.post(
 
       return res.json({
         accessToken,
-        user: { id: user.id, email: user.email, name: user.name },
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
       });
     } catch (err) {
       console.error(err);
@@ -122,7 +135,6 @@ authRouter.post("/refresh", async (req: any, res: any) => {
     const token = req.cookies[COOKIE_NAME];
     if (!token) return res.status(401).json({ message: "No refresh token" });
 
-    // verify token signature
     let payload: any;
     try {
       payload = verifyRefreshToken(token) as any;
@@ -132,21 +144,21 @@ authRouter.post("/refresh", async (req: any, res: any) => {
         .json({ message: "Invalid or expired refresh token" });
     }
 
-    // ensure token exists in DB
     const dbToken = await RTModel.findRefreshToken(token);
     if (!dbToken)
       return res.status(401).json({ message: "Refresh token revoked" });
 
-    // rotate tokens: delete current and issue new
     await RTModel.deleteRefreshToken(token);
 
     const newAccessToken = createAccessToken({
       userId: payload.userId,
       email: payload.email,
+      role: payload.role,
     });
     const newRefreshToken = createRefreshToken({
       userId: payload.userId,
       email: payload.email,
+      role: payload.role,
     });
     const expiresAt = new Date(Date.now() + REFRESH_EXPIRES_MS)
       .toISOString()

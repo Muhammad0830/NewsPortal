@@ -1,4 +1,5 @@
 import BackgroundComponent from "@/components/BackgroundComponent";
+import NavBar from "@/components/NavBar";
 
 type Props = {
   children: React.ReactNode;
@@ -13,7 +14,9 @@ export default async function LocaleLayout({ children, params }: Props) {
       <head />
       <body>
         <BackgroundComponent />
+        <NavBar />
         <div className="relative">{children}</div>
+        <div></div>
       </body>
     </html>
   );

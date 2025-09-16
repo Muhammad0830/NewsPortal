@@ -31,9 +31,7 @@ export default async function LocaleLayout({ children, params }: Props) {
                 disableTransitionOnChange
               >
                 <div className="min-h-screen w-full">
-                  <NavBar />
-                  <div className="relative">{children}</div>
-                  <div></div>
+                  {children}
                   <Toaster />
                 </div>
               </ThemeProvider>

@@ -6,18 +6,13 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function LocaleLayout({ children, params }: Props) {
-  const { locale } = await params;
-
+export default async function RoutesLayout({ children }: Props) {
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <head />
-      <body>
-        <BackgroundComponent />
-        <NavBar />
-        <div className="relative">{children}</div>
-        <div></div>
-      </body>
-    </html>
+    <div>
+      <BackgroundComponent />
+      <NavBar />
+      <div className="relative">{children}</div>
+      <div></div>
+    </div>
   );
 }

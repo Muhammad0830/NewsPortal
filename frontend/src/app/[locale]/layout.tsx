@@ -1,7 +1,6 @@
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import NavBar from "@/components/NavBar";
 import { ThemeProvider } from "next-themes";
 import Providers from "@/context/QueryClientContext";
 import { AuthProvider } from "@/context/authContext";

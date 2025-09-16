@@ -12,9 +12,6 @@ const Page = () => {
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode") || "signup";
   const router = useRouter();
-  const [mode, setMode] = useState<"signin" | "signup">(
-    modeParam === "signin" ? "signin" : "signup"
-  );
   const t = useTranslations("Auth");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -68,11 +65,6 @@ const Page = () => {
       setSuccess(null);
     }
   }, [success]); // eslint-disable-line
-
-  useEffect(() => {
-    if (modeParam === "signup") setMode("signup");
-    if (modeParam === "signin") setMode("signin");
-  }, [modeParam]);
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

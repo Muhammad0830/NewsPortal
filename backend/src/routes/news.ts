@@ -1,11 +1,13 @@
 import express from "express";
-import pool from "../mysql/mysql";
+import { query } from "../middlewares/helper";
+
+import pool from "../db/mysql";
 
 const newsRouter = express.Router();
 
 newsRouter.get("/", async (req: any, res: any) => {
   try {
-    const [rows] = await pool.query<any[]>("SELECT * FROM news");
+    const rows = await query<any[]>("SELECT * FROM news");
 
     if (rows.length === 0) {
       res.status(404).json({ error: "No news found" });
@@ -25,7 +27,7 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
   try {
     const newsId = req.params.id;
 
-    const [rows] = await pool.query<any[]>(
+    const rows = await query<any[]>(
       `SELECT n.id, n.title, n.newsText, n.image, n.created_at, n.category, n.description,
               c.type, c.content, c.\`order\`
        FROM news n
@@ -75,7 +77,7 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
 
 newsRouter.get("/categories", async (req: any, res: any) => {
   try {
-    const [rows] = await pool.query<any[]>("SELECT * FROM categories");
+    const rows = await query<any[]>("SELECT * FROM categories");
 
     if (rows.length === 0) {
       res.status(404).json({ error: "No news found" });

@@ -1,13 +1,17 @@
 "use client";
+import { useAuth } from "@/context/authContext";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const Page = () => {
-  const params = useParams();
-  const modeParam = params?.mode;
+  const searchParams = useSearchParams();
+  const modeParam = searchParams.get("mode") || "signup";
+  const router = useRouter();
   const [mode, setMode] = useState<"signin" | "signup">(
     modeParam === "signin" ? "signin" : "signup"
   );
@@ -19,16 +23,72 @@ const Page = () => {
     modeParam === "signin" ? "signin" : "signup"
   );
 
+  const { login, register, error, success, setError, setSuccess } = useAuth();
+
+  useEffect(() => {
+    if (error !== null) {
+      toast(
+        error === "login"
+          ? "Failed to login"
+          : error === "signup"
+          ? "Failed to signup"
+          : "Failed to Logout",
+        {
+          description:
+            error === "login"
+              ? "Please check your credentials and try again"
+              : error === "signup"
+              ? "Please try again"
+              : "Internal server error",
+        }
+      );
+      setError(null);
+    }
+  }, [error]); // eslint-disable-line
+
+  useEffect(() => {
+    if (success) {
+      toast(
+        success === "signup"
+          ? "Successfully registered"
+          : success === "login"
+          ? "Successfully logged in"
+          : "Successfully logged out",
+        {
+          description:
+            success === "login"
+              ? "Welcome back"
+              : success === "signup"
+              ? "Your journey begins here"
+              : "Come back anytime",
+        }
+      );
+      if (success === "signup" || success === "login") router.push("/home");
+      setSuccess(null);
+    }
+  }, [success]); // eslint-disable-line
+
   useEffect(() => {
     if (modeParam === "signup") setMode("signup");
     if (modeParam === "signin") setMode("signin");
   }, [modeParam]);
 
-  console.log("mode", mode);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("handleSubmit");
+    if (mode === "signup") {
+      if (name && email && password) {
+        await register(name, email, password);
+      } else {
+        toast("Please fill all the fields");
+      }
+    } else {
+      console.log("signin, email, password", email, password);
+      if (email && password) {
+        await login(email, password);
+      } else {
+        toast("Please fill all the fields");
+      }
+    }
   };
 
   return (

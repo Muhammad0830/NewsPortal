@@ -7,21 +7,17 @@ import {
   registerUser,
 } from "@/services/auth";
 import { usePathname } from "next/navigation";
-
-type User = {
-  user: {
-    id: number;
-    email: string;
-    name: string;
-    image: string;
-  };
-};
+import { User } from "@/types/types";
 
 type AuthContextType = {
   user: User | null;
   loading: boolean;
   error: "login" | "signup" | "logout" | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+    role?: "admin" | "user"
+  ) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
   setError: React.Dispatch<
@@ -45,27 +41,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [success, setSuccess] = useState<"login" | "signup" | "logout" | null>(
     null
   );
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
 
   useEffect(() => {
-    if (pathname.startsWith("/auth")) return;
+    if (isLoggedOut) return;
 
     getProfile()
       .then((u) => setUser(u))
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
-  }, [pathname]);
+  }, [pathname]); // eslint-disable-line
 
-  const login = async (email: string, password: string) => {
+  const login = async (
+    email: string,
+    password: string,
+    role?: "admin" | "user"
+  ) => {
     try {
-      await loginUser({ email, password });
+      const updatedRole = role || "user";
+      await loginUser({ email, password, role: updatedRole });
       const u = await getProfile();
       setUser(u);
       setSuccess("login");
+      setIsLoggedOut(false);
     } catch (err: unknown) {
       setError("login");
       console.error("login error", err);
     }
   };
+
+  console.log("user", user);
 
   const register = async (name: string, email: string, password: string) => {
     try {
@@ -73,6 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const u = await getProfile();
       setUser(u);
       setSuccess("signup");
+      setIsLoggedOut(false);
     } catch (err: unknown) {
       setError("signup");
       console.error("signup error", err);
@@ -84,6 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await logoutUser();
       setUser(null);
       setSuccess("logout");
+      setIsLoggedOut(true);
     } catch (err: unknown) {
       setError("logout");
       console.error("logout error", err);

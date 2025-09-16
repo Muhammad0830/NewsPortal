@@ -12,9 +12,6 @@ const Page = () => {
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode") || "signup";
   const router = useRouter();
-  const [mode, setMode] = useState<"signin" | "signup">(
-    modeParam === "signin" ? "signin" : "signup"
-  );
   const t = useTranslations("Auth");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,6 +19,7 @@ const Page = () => {
   const [customMode, setCustomMode] = useState<"signin" | "signup">(
     modeParam === "signin" ? "signin" : "signup"
   );
+  const [role, setRole] = useState<"admin" | "user">("user");
 
   const { login, register, error, success, setError, setSuccess } = useAuth();
 
@@ -68,31 +66,26 @@ const Page = () => {
     }
   }, [success]); // eslint-disable-line
 
-  useEffect(() => {
-    if (modeParam === "signup") setMode("signup");
-    if (modeParam === "signin") setMode("signin");
-  }, [modeParam]);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (mode === "signup") {
-      if (name && email && password) {
-        await register(name, email, password);
-      } else {
-        toast("Please fill all the fields");
-      }
+    if (name && email && password) {
+      await register(name, email, password);
     } else {
-      console.log("signin, email, password", email, password);
-      if (email && password) {
-        await login(email, password);
-      } else {
-        toast("Please fill all the fields");
-      }
+      toast("Please fill all the fields");
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (email && password) {
+      await login(email, password, role);
+    } else {
+      toast("Please fill all the fields");
     }
   };
 
   return (
-    <div className="pt-20 min-h-screen flex justify-center items-center lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px]">
+    <div className="pt-20 min-h-screen w-screen overflow-hidden relative flex justify-center items-center lg:px-[60px] md:px-[40px] sm:px-[30px] px-[20px]">
       {/* sign up */}
       <div
         className={cn(
@@ -113,7 +106,7 @@ const Page = () => {
         <div className="mt-2 text-sm text-center mb-2">
           {t("Enter your details below")}
         </div>
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-2">
+        <form onSubmit={handleSignup} className="w-full flex flex-col gap-2">
           <div className="border border-primary rounded-sm overflow-hidden">
             <input
               onChange={(e) => setName(e.target.value)}
@@ -159,7 +152,7 @@ const Page = () => {
               href={`/auth?mode=signin`}
             >
               <span className="text-primary font-semibold underline">
-                {t("sign up")}
+                {t("sign in")}
               </span>
             </Link>
           </div>
@@ -176,7 +169,7 @@ const Page = () => {
         )}
       >
         <div className="lg:text-xl text-center md:text-lg text-[16px] font-semibold">
-          {t("Sign In")}
+          {role ? t("Sign In") : t("Sign In as Admin")}
         </div>
 
         <div className="text-center lg:text-[16px] text-sm font-semibold">
@@ -186,7 +179,7 @@ const Page = () => {
         <div className="mt-2 text-sm text-center mb-2">
           {t("Enter your details below")}
         </div>
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-2">
+        <form onSubmit={handleLogin} className="w-full flex flex-col gap-2">
           <div className="border border-primary rounded-sm overflow-hidden">
             <input
               onChange={(e) => setEmail(e.target.value)}
@@ -228,6 +221,37 @@ const Page = () => {
             </Link>
           </div>
         </form>
+        <div className="absolute bottom-0 left-0 right-0 translate-y-[120%] flex flex-col gap-1">
+          <div className="text-center font-semibold">{t("Sign in as:")}</div>
+          <div className="relative flex justify-center">
+            <div className="w-[200px] relative rounded-full border border-black dark:border-white flex overflow-hidden bg-white dark:bg-black">
+              <button
+                onClick={() => setRole("user")}
+                className={cn(
+                  "z-10 flex-1 h-full cursor-pointer rounded-full px-2 py-1 flex justify-center items-center font-semibold text-white transition-colors duration-300",
+                  role === "user" ? "text-white" : "text-black dark:text-white"
+                )}
+              >
+                User
+              </button>
+              <button
+                onClick={() => setRole("admin")}
+                className={cn(
+                  "z-10 flex-1 h-full cursor-pointer rounded-full px-2 py-1 flex justify-center items-center font-semibold text-white transition-colors duration-300",
+                  role === "admin" ? "text-white" : "text-black dark:text-white"
+                )}
+              >
+                Admin
+              </button>
+              <div
+                className={cn(
+                  "absolute w-1/2 bg-primary h-full rounded-full px-2 py-1 flex justify-center items-center font-semibold text-white transition-left duration-300",
+                  role === "user" ? "left-0" : "left-1/2"
+                )}
+              ></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

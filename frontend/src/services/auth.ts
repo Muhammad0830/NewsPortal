@@ -10,7 +10,7 @@ export async function registerUser(data: {
   return res.data;
 }
 
-export async function loginUser(data: { email: string; password: string }) {
+export async function loginUser(data: { email: string; password: string, role: "admin" | "user" }) {
   try {
     const res = await api.post("/auth/login", data);
     setAccessToken(res.data.accessToken);

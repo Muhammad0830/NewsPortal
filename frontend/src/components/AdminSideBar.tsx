@@ -6,6 +6,7 @@ import {
   ShieldUser,
   User,
   User2,
+  Users,
 } from "lucide-react";
 
 import {
@@ -79,7 +80,7 @@ export function AppSidebar() {
                   className="lg:text-lg flex items-center gap-2"
                 >
                   <LayoutDashboard />
-                  <span className="">Dashboard</span>
+                  <span>Dashboard</span>
                 </Link>
               </SidebarMenuItem>
               <SidebarMenuItem
@@ -112,6 +113,22 @@ export function AppSidebar() {
                 >
                   <ShieldUser />
                   <span>Admins</span>
+                </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem
+                className={cn(
+                  "rounded-sm px-2 py-1 hover:bg-primary/20 dark:hover:bg-primary/40",
+                  pathName.includes("/news")
+                    ? "bg-primary/20 dark:hover:bg-primary/40"
+                    : ""
+                )}
+              >
+                <Link
+                  href={"/admin/users"}
+                  className="lg:text-lg flex items-center gap-2"
+                >
+                  <Users />
+                  <span>Users</span>
                 </Link>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -172,7 +189,7 @@ export function AppSidebar() {
                       <div className="w-6 h-6 relative">
                         <LogOut className="w-full h-full" />
                       </div>
-                      <span className="">Logout</span>
+                      <span>Logout</span>
                     </Link>
                   </DropdownMenuContent>
                 </DropdownMenu>

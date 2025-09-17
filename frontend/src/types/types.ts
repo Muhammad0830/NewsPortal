@@ -54,3 +54,11 @@ export type User = {
     role: "admin" | "user";
   };
 };
+
+export type Payment = {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  status: "published" | "unpublished";
+};

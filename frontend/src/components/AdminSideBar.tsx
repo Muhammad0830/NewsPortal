@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   LogOut,
   ShieldUser,
+  Undo2,
   User,
   User2,
   Users,
@@ -102,7 +103,7 @@ export function AppSidebar() {
               <SidebarMenuItem
                 className={cn(
                   "rounded-sm px-2 py-1 hover:bg-primary/20 dark:hover:bg-primary/40",
-                  pathName.includes("/news")
+                  pathName.includes("/admins")
                     ? "bg-primary/20 dark:hover:bg-primary/40"
                     : ""
                 )}
@@ -118,7 +119,7 @@ export function AppSidebar() {
               <SidebarMenuItem
                 className={cn(
                   "rounded-sm px-2 py-1 hover:bg-primary/20 dark:hover:bg-primary/40",
-                  pathName.includes("/news")
+                  pathName.includes("/users")
                     ? "bg-primary/20 dark:hover:bg-primary/40"
                     : ""
                 )}
@@ -129,6 +130,15 @@ export function AppSidebar() {
                 >
                   <Users />
                   <span>Users</span>
+                </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem className="rounded-sm px-2 py-1.5 hover:bg-primary/20 dark:hover:bg-primary/40">
+                <Link
+                  href={"/home"}
+                  className="lg:text-lg flex items-center gap-2"
+                >
+                  <Undo2 />
+                  <span>Go back</span>
                 </Link>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -168,7 +178,7 @@ export function AppSidebar() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     side="top"
-                    className="bg-primary/30 dark:bg-primary/15 w-[15rem] border border-white z-[999] p-1.5"
+                    className="bg-primary/30 dark:bg-primary/15 w-[15rem] border border-white z-[999] p-1.5 flex flex-col gap-1"
                   >
                     <div className="hover:bg-white dark:hover:bg-[#010420] rounded-sm px-2 py-1">
                       <Link
@@ -179,8 +189,6 @@ export function AppSidebar() {
                         <span>Profile</span>
                       </Link>
                     </div>
-                    <Separator className="my-0.5" />
-                    <Separator className="my-0.5" />
                     <Link
                       onClick={() => handleLogout()}
                       href={"/auth?mode=signin"}

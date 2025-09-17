@@ -110,5 +110,20 @@
         "sign in": "sign in",
         "sign up": "sign up",
         "Sign in as:": "Sign in as:"
+    },
+    "adminNews": {
+        "type to search": "Type to search ...",
+        "Filter by": "Filter by:",
+        "All": "All",
+        "Published": "Published",
+        "Unpublished": "Unpublished",
+        "View": "View",
+        "Edit": "Edit",
+        "Delete": "Delete",
+        "Title": "Title",
+        "Description": "Description",
+        "Status": "Status",
+        "Created At": "Created At",
+        "Actions": "Actions"
     }
 }

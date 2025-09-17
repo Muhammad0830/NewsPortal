@@ -1,5 +1,12 @@
 "use client";
-import { FileText, LayoutDashboard, LogOut } from "lucide-react";
+import {
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  ShieldUser,
+  User,
+  User2,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -16,9 +23,15 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authContext";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+
 export function AppSidebar() {
   const pathName = usePathname();
-  const { logout, success, error, setSuccess, setError } = useAuth();
+  const { user, logout, success, error, setSuccess, setError } = useAuth();
 
   useEffect(() => {
     if (success === "logout") {
@@ -43,7 +56,12 @@ export function AppSidebar() {
       <SidebarContent className="pt-0 flex flex-col justify-between bg-primary/10 dark:bg-primary/5">
         <SidebarGroup className="md:p-3 md:pt-0 pt-0">
           <div className="lg:text-[28px] sm:text-[24px] text-[20px] py-[15px] font-semibold text-center pr-2">
-            News Portal
+            <span className="relative">
+              News Portal
+              <span className="absolute text-sm right-[0] translate-3/5 bottom-0">
+                Admins
+              </span>
+            </span>
           </div>
           <Separator className="bg-primary dark:bg-[#234264] mb-2" />
           <SidebarGroupContent>
@@ -77,7 +95,23 @@ export function AppSidebar() {
                   className="lg:text-lg flex items-center gap-2"
                 >
                   <FileText />
-                  <span className="">News</span>
+                  <span>News</span>
+                </Link>
+              </SidebarMenuItem>
+              <SidebarMenuItem
+                className={cn(
+                  "rounded-sm px-2 py-1 hover:bg-primary/20 dark:hover:bg-primary/40",
+                  pathName.includes("/news")
+                    ? "bg-primary/20 dark:hover:bg-primary/40"
+                    : ""
+                )}
+              >
+                <Link
+                  href={"/admin/admins"}
+                  className="lg:text-lg flex items-center gap-2"
+                >
+                  <ShieldUser />
+                  <span>Admins</span>
                 </Link>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -88,20 +122,60 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem
                 className={cn(
-                  "rounded-sm cursor-pointer border border-red-400 text-red-400 dark:border-red-500 dark:text-red-500 hover:border-red-600 hover:text-red-600 dark:hover:text-red-600 dark:hover:border-red-600",
+                  "relative rounded-sm hover:bg-primary/20 dark:hover:bg-primary/40",
                   pathName.includes("/news")
-                    ? "bg-primary/10 dark:bg-primary/20 hover:bg-primary/10 dark:hover:bg-primary/20"
+                    ? "bg-primary/20 dark:hover:bg-primary/40"
                     : ""
                 )}
               >
-                <Link
-                  onClick={() => handleLogout()}
-                  href={"/auth?mode=signin"}
-                  className="lg:text-lg flex items-center gap-2 px-3 py-2"
-                >
-                  <LogOut />
-                  <span className="">Logout</span>
-                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div className=" md:h-[50px] cursor-pointer h-[46px] border border-black/40 dark:border-white/40 flex rounded-sm px-2 py-1 bg-primary/5 dark:bg-primary/5 hover:bg-primary/20">
+                      <Link
+                        href={"/admin/profile"}
+                        className="lg:text-lg flex items-center gap-2"
+                      >
+                        <div className="p-1 aspect-square border border-black/40 dark:border-white/40 flex justify-center items-center rounded-full bg-primary/10 dark:bg-primary/20">
+                          <User />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <span className="text-sm font-bold">
+                            {user?.user.name}
+                          </span>
+                          <span className="text-sm font-semibold text-black/70 dark:text-white/70 line-clamp-1">
+                            {user?.user.email}
+                          </span>
+                        </div>
+                      </Link>
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    side="top"
+                    className="bg-primary/30 dark:bg-primary/15 w-[15rem] border border-white z-[999] p-1.5"
+                  >
+                    <div className="hover:bg-white dark:hover:bg-[#010420] rounded-sm px-2 py-1">
+                      <Link
+                        href={`/admin/profile/${user?.user.email}`}
+                        className="lg:text-lg flex items-center gap-2"
+                      >
+                        <User2 />
+                        <span>Profile</span>
+                      </Link>
+                    </div>
+                    <Separator className="my-0.5" />
+                    <Separator className="my-0.5" />
+                    <Link
+                      onClick={() => handleLogout()}
+                      href={"/auth?mode=signin"}
+                      className="lg:text-lg flex items-center gap-2 px-2 py-1.5 hover:bg-white dark:hover:bg-[#010420] border text-red-500 border-red-500 rounded-sm"
+                    >
+                      <div className="w-6 h-6 relative">
+                        <LogOut className="w-full h-full" />
+                      </div>
+                      <span className="">Logout</span>
+                    </Link>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>

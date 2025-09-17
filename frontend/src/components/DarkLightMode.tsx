@@ -4,7 +4,7 @@ import { Moon, Sun } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
-const DarkLightMode = () => {
+const DarkLightMode = ({ isUserPage }: { isUserPage: boolean }) => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isLight, setIsLight] = useState(false);
@@ -23,7 +23,12 @@ const DarkLightMode = () => {
   return (
     <button
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="relative border sm:h-10 h-8 aspect-square z-10 dark:bg-black border-black/40 dark:border-white/30 overflow-hidden rounded-full sm:p-1.5 p-1 cursor-pointer flex justify-center items-center"
+      className={cn(
+        "relative border sm:h-10 h-8 aspect-square z-10 overflow-hidden rounded-full sm:p-1.5 p-1 cursor-pointer flex justify-center items-center",
+        isUserPage
+          ? "dark:bg-black border-black/40 dark:border-white/30"
+          : "border-primary dark:border-primary/50 bg-primary/10 hover:bg-primary/30"
+      )}
     >
       <Moon
         className={cn(

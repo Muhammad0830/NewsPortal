@@ -82,7 +82,7 @@ const NavBar = () => {
         ) : null}
         <div className="flex gap-2">
           <LangButton />
-          <DarkLightMode />
+          <DarkLightMode isUserPage={true} />
           <MenuButton />
           <ProfileButton />
         </div>

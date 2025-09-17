@@ -12,7 +12,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <AppSidebar />
       <main className="flex w-full relative">
         <AdminNavBar open={open} setOpen={setOpen} />
-        <div className="pt-20">{children}</div>
+        <div className="pt-20 md:px-[10px] px-[30px]">{children}</div>
       </main>
     </SidebarProvider>
   );

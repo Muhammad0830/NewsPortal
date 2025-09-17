@@ -71,13 +71,14 @@ const ProfileButton = () => {
       </button>
       <div
         className={cn(
-          "absolute lg:min-w-[200px] flex flex-col items-center p-2 origin-top-right opacity-0 scale-[0] top-[80%] right-2  rounded-md dark:bg-black bg-white border dark:border-white/30 border-black/50 transition-all duration-300 z-10",
+          "absolute lg:min-w-[200px] flex flex-col items-center p-2 origin-top-right opacity-0 scale-[0] top-[80%] right-2 rounded-md dark:bg-black bg-white border dark:border-white/30 border-black/50 transition-all duration-300 z-10",
           isOpen && "scale-[1] opacity-100 top-[120%] right-0"
         )}
       >
         <Link
           href={"/profile"}
-          className="w-full flex cursor-pointer items-center gap-2 bg-[#adadad20] hover:bg-[#adadad60] dark:bg-[#1f1f1f70] dark:hover:bg-[#1f1f1f] mb-2 border dark:border-white/10 border-black/10 px-2 py-1 rounded-md"
+          onClick={() => setIsOpen(false)}
+          className="w-full flex cursor-pointer items-center gap-2 bg-[#adadad20] hover:bg-[#adadad60] dark:bg-[#1f1f1f70] dark:hover:bg-[#1f1f1f] mb-1 border dark:border-white/10 border-black/10 px-2 py-1 rounded-md"
         >
           <div className="h-4 aspect-square rounded-full flex justify-center items-center">
             {user.user.image ? (
@@ -100,30 +101,16 @@ const ProfileButton = () => {
           </div>
         </Link>
         <ul className="flex flex-col w-full justify-start gap-1">
-          <li className="text-start w-full flex flex-col">
-            <Link
-              className={cn(
-                "group relative w-full text-nowrap dark:text-white text-black px-2 py-1 rounded-sm dark:hover:bg-[#272727] hover:bg-[#e1e1e1]"
-              )}
-              href="/profile"
-            >
-              {t("profile")}
-              <span
-                className={cn(
-                  "absolute bottom-0 h-[2px] bg-primary rounded-full transition-all duration-300"
-                )}
-              ></span>
-            </Link>
-          </li>
           {user.user.role === "admin" && (
             <li className="text-start w-full flex flex-col">
               <Link
                 href={"/admin/dashboard"}
+                onClick={() => setIsOpen(false)}
                 className={cn(
                   "group relative text-start w-full text-nowrap dark:text-white text-black px-2 py-1 rounded-sm dark:hover:bg-[#272727] hover:bg-[#e1e1e1]"
                 )}
               >
-                {t("Admin")}
+                {t("Admin page")}
                 <span
                   className={cn(
                     "absolute bottom-0 h-[2px] bg-primary rounded-full transition-all duration-300"
@@ -136,8 +123,9 @@ const ProfileButton = () => {
             <Dialog>
               <DialogTrigger asChild>
                 <div
+                  onClick={() => setIsOpen(false)}
                   className={cn(
-                    "group relative cursor-pointer text-start w-full text-nowrap dark:text-white text-black px-2 py-1 rounded-sm bg-[#ff2f2f] hover:bg-[#ff0000] dark:bg-[#ac0000] dark:hover:bg-[#ff0707]"
+                    "group relative cursor-pointer text-start w-full text-nowrap text-white px-2 py-1 rounded-sm bg-[#ff2f2f] hover:bg-[#ff0000] dark:bg-[#ac0000] dark:hover:bg-[#ff0707]"
                   )}
                 >
                   {t("Logout")}
@@ -158,12 +146,12 @@ const ProfileButton = () => {
                 <div className="flex justify-between gap-2 items-center">
                   <button
                     onClick={() => handleLogout()}
-                    className="bg-[#ff0000] rounded-sm px-2 py-1 text-white cursor-pointer"
+                    className="bg-[#ff0000] hover:bg-[#f00000] rounded-sm px-2 py-1 text-white cursor-pointer"
                   >
                     {t("Logout")}
                   </button>
                   <DialogClose asChild>
-                    <button className="border border-black/40 dark:border-white/40 px-2 py-1 rounded-sm cursor-pointer">
+                    <button className="hover:bg-black/10 dark:hover:bg-white/10 border border-black/40 dark:border-white/40 px-2 py-1 rounded-sm cursor-pointer">
                       {t("Cancel")}
                     </button>
                   </DialogClose>

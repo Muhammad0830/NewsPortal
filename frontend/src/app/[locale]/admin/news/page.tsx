@@ -6,8 +6,6 @@ import { DataTable } from "@/components/DataTable";
 import { columns } from "./TableColumns";
 import { Payment } from "@/types/types";
 
-const filters = ["All", "Published", "Unpublished"];
-
 const data: Payment[] = [
   {
     id: "1",

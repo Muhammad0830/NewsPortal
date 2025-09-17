@@ -82,10 +82,13 @@ const Page = () => {
           </h2>
 
           <div className="flex flex-col sm:flex-row gap-4 sm:mt-6 mt-2">
-            <button className="flex  items-center gap-2 px-1.5 pb-0.5 rounded-sm cursor-pointer border-[1px] font-semibold border-white dark:border-black text-white dark:text-black bg-black dark:bg-white">
+            <Link
+              href={"/news"}
+              className="flex  items-center gap-2 px-1.5 pb-0.5 rounded-sm cursor-pointer border-[1px] font-semibold border-white dark:border-black text-white dark:text-black bg-black dark:bg-white"
+            >
               <span>{t("goto_news")}</span>
               <ExternalLink size={14} />
-            </button>
+            </Link>
           </div>
         </div>
 

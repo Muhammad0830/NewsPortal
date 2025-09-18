@@ -154,7 +154,6 @@ newsRouter.put("/publish", async (req: any, res: any) => {
 newsRouter.put("/unpublish", async (req: any, res: any) => {
   try {
     const { id } = req.body;
-    console.log('id', id)
 
     const newsId = await unPublishNews(id);
 

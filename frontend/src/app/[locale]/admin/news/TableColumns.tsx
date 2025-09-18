@@ -2,12 +2,19 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import TableActionButton from "@/components/TableActionButton";
-import { Payment } from "@/types/types";
+import { News } from "@/types/types";
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<News>[] = [
   {
     accessorKey: "title",
     header: "Title",
+    cell: ({ row }) => {
+      return (
+        <div className="h-full lg:max-w-[350px] md:max-w-[250px] max-w-[200px] overflow-hidden relative truncate">
+          {row.original.title}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "description",
@@ -18,8 +25,17 @@ export const columns: ColumnDef<Payment>[] = [
     header: "Status",
   },
   {
-    accessorKey: "createdAt",
+    accessorKey: "created_at",
     header: "Created At",
+    cell: ({ row }) => {
+      const createdAt = new Date(row.original.created_at);
+      return (
+        <div>
+          {createdAt.toLocaleDateString()} {createdAt.getHours()}:
+          {createdAt.getMinutes()}
+        </div>
+      );
+    },
   },
   {
     id: "actions",

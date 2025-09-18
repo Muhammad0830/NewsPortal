@@ -7,6 +7,7 @@ export interface News {
   category: string;
   created_at: string;
   newsText: string;
+  status: "published" | "unpublished";
 }
 
 export interface Category {
@@ -53,12 +54,4 @@ export type User = {
     image: string;
     role: "admin" | "user";
   };
-};
-
-export type Payment = {
-  id: string;
-  title: string;
-  description: string;
-  createdAt: string;
-  status: "published" | "unpublished";
 };

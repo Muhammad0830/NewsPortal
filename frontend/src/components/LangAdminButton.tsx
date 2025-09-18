@@ -1,13 +1,15 @@
 "use client";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname as useNavigationPathName } from "@/i18n/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { Globe } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 const LangAdminButton = () => {
   const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const pathName = usePathname();
+  const pathName = useNavigationPathName();
   const openBtnRef = useRef<HTMLDivElement>(null);
+  const navigationPathName = usePathname();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -47,21 +49,36 @@ const LangAdminButton = () => {
         <Link
           href={`${pathName}`}
           locale="en"
-          className="rounded-sm px-2 py-1 bg-primary/10 hover:bg-primary/30 cursor-pointer"
+          className={cn(
+            "rounded-sm px-2 py-1 hover:bg-primary/30 cursor-pointer",
+            navigationPathName.startsWith("/en")
+              ? "bg-primary/30"
+              : "bg-primary/10"
+          )}
         >
           English
         </Link>
         <Link
           href={`${pathName}`}
           locale="ru"
-          className="rounded-sm px-2 py-1 bg-primary/10 hover:bg-primary/30 cursor-pointer"
+          className={cn(
+            "rounded-sm px-2 py-1 bg-primary/10 hover:bg-primary/30 cursor-pointer",
+            navigationPathName.startsWith("/ru")
+              ? "bg-primary/30"
+              : "bg-primary/10"
+          )}
         >
           Русский
         </Link>
         <Link
           href={`${pathName}`}
           locale="uz"
-          className="rounded-sm px-2 py-1 bg-primary/10 hover:bg-primary/30 cursor-pointer"
+          className={cn(
+            "rounded-sm px-2 py-1 bg-primary/10 hover:bg-primary/30 cursor-pointer",
+            navigationPathName.startsWith("/uz")
+              ? "bg-primary/30"
+              : "bg-primary/10"
+          )}
         >
           O`zbekcha
         </Link>

@@ -1,43 +1,41 @@
 "use client";
 import FilterDropdown from "@/components/FilterDropdown";
 import { useTranslations } from "next-intl";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DataTable } from "@/components/DataTable";
 import { columns } from "./TableColumns";
-import { Payment } from "@/types/types";
-
-const data: Payment[] = [
-  {
-    id: "1",
-    title: "Title1",
-    description: "Description",
-    createdAt: "2023-03-01",
-    status: "published",
-  },
-  {
-    id: "2",
-    title: "Title2",
-    description: "Description",
-    createdAt: "2023-03-01",
-    status: "unpublished",
-  },
-  {
-    id: "3",
-    title: "Title3",
-    description: "Description",
-    createdAt: "2023-03-01",
-    status: "unpublished",
-  },
-];
+import { News } from "@/types/types";
+import useApiQuery from "@/hooks/useApiQiery";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
 
 const Page = () => {
   const t = useTranslations("adminNews");
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
+  const [data, setData] = useState<News[]>([]);
+  const { data: newsData, isLoading } = useApiQuery<News[]>("/news", ["news"]);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (newsData) {
+      setData(newsData);
+    }
+  }, [newsData]);
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div>
-      <div className="lg:text-2xl md:text-xl text-lg font-bold mb-4">
-        All News
+      <div className="mb-4 mt-2 flex items-center justify-between gap-2">
+        <span className="lg:text-3xl md:text-xl text-lg font-bold">
+          All News
+        </span>
+        <Button
+          onClick={() => router.push("/admin/news/create")}
+          className="cursor-pointer bg-primary/30 hover:bg-primary/60 dark:bg-primary/50 dark:hover:bg-primary/30 border border-primary text-black dark:text-white"
+        >
+          Create News
+        </Button>
       </div>
       {/* search & filter */}
       <div className="flex gap-2 items-center justify-between w-full mb-4 z-10 relative">

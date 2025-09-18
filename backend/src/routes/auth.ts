@@ -85,7 +85,6 @@ authRouter.post(
       password: string;
       role: "admin" | "user";
     };
-    console.log("req.body", req.body);
 
     const role: "admin" | "user" = req.body.role || "user";
 

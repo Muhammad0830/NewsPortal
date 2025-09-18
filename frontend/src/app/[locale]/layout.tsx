@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import Providers from "@/context/QueryClientContext";
 import { AuthProvider } from "@/context/authContext";
 import { Toaster } from "@/components/ui/sonner";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -21,22 +22,24 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale} suppressHydrationWarning>
       <head />
       <body>
-        <AuthProvider>
-          <NextIntlClientProvider>
-            <Providers>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                disableTransitionOnChange
-              >
-                <div className="min-h-screen w-full">
-                  {children}
-                  <Toaster />
-                </div>
-              </ThemeProvider>
-            </Providers>
-          </NextIntlClientProvider>
-        </AuthProvider>
+        <EdgeStoreProvider>
+          <AuthProvider>
+            <NextIntlClientProvider>
+              <Providers>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  disableTransitionOnChange
+                >
+                  <div className="min-h-screen w-full">
+                    {children}
+                    <Toaster />
+                  </div>
+                </ThemeProvider>
+              </Providers>
+            </NextIntlClientProvider>
+          </AuthProvider>
+        </EdgeStoreProvider>
       </body>
     </html>
   );

@@ -42,7 +42,7 @@ const MenuAdminButton = () => {
             href={"/admin/dashboard"}
             className={cn(
               "lg:text-lg flex items-center gap-2 px-3 py-2 bg-primary/30 hover:bg-primary/80 rounded-sm",
-              pathName === "/admin/dashboard" ? "bg-primary/80" : ""
+              pathName.startsWith("/admin/dashboard") ? "bg-primary/80" : ""
             )}
           >
             <LayoutDashboard />
@@ -53,7 +53,7 @@ const MenuAdminButton = () => {
             href={"/admin/news"}
             className={cn(
               "lg:text-lg flex items-center gap-2 px-3 py-2 bg-primary/30 hover:bg-primary/80 rounded-sm",
-              pathName === "/admin/news" ? "bg-primary/80" : ""
+              pathName.startsWith("/admin/news") ? "bg-primary/80" : ""
             )}
           >
             <FileText />
@@ -64,7 +64,7 @@ const MenuAdminButton = () => {
             href={"/admin/admins"}
             className={cn(
               "lg:text-lg flex items-center gap-2 px-3 py-2 bg-primary/30 hover:bg-primary/80 rounded-sm",
-              pathName === "/admin/admins" ? "bg-primary/80" : ""
+              pathName.startsWith("/admin/admins") ? "bg-primary/80" : ""
             )}
           >
             <ShieldUser />
@@ -75,7 +75,7 @@ const MenuAdminButton = () => {
             href={"/admin/profile"}
             className={cn(
               "lg:text-lg flex items-center gap-2 px-3 py-2 bg-primary/30 hover:bg-primary/80 rounded-sm",
-              pathName === "/admin/profile" ? "bg-primary/80" : ""
+              pathName.startsWith("/admin/profile") ? "bg-primary/80" : ""
             )}
           >
             <User2 />

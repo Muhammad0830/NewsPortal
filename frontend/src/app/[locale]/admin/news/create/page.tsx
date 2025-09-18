@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogOverlay,
   DialogTitle,
@@ -21,12 +22,9 @@ import {
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useState } from "react";
-
-interface ContentAdder {
-  type: "title" | "text" | "image" | "link";
-  label: string;
-  icon: React.ReactNode;
-}
+import { SecondaryContent, ContentAdder, RequestNews } from "@/types/types";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { toast } from "sonner";
 
 const contentAdders: ContentAdder[] = [
   {
@@ -51,11 +49,9 @@ const contentAdders: ContentAdder[] = [
   },
 ];
 
-interface SecondaryContent {
-  type: "title" | "text" | "image" | "link";
-  content: string;
-  order: number;
-}
+type insertResponse = {
+  insertId: number;
+};
 
 const Page = () => {
   const [secondaryContent, setSecondaryContent] = useState<SecondaryContent[]>(
@@ -70,8 +66,42 @@ const Page = () => {
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("working");
     e.preventDefault();
+    if (!mainTitle || !description || !image || !slug) {
+      toast(t("Action Denied"), {
+        description: t("Fill all the necessary fields"),
+      });
+      return;
+    }
+
+    mutateNews(
+      {
+        title: mainTitle,
+        description: description,
+        status: "unpublished",
+        image: image,
+        redirectLink: link,
+        slug: slug,
+        contents: secondaryContent,
+      },
+      {
+        onSuccess: () => {
+          toast(t("News created successfully"));
+        },
+        onError: (error) => {
+          toast(t("Action Failed"), {
+            description: t("Internal Server Error"),
+          });
+          console.error(error);
+        },
+      }
+    );
   };
+
+  const { mutate: mutateNews } = useApiMutation<insertResponse, RequestNews>(
+    "/news/create"
+  );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -116,7 +146,11 @@ const Page = () => {
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 mb-4">
+      <form
+        id="myForm"
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4 mb-4"
+      >
         <div className="flex flex-col gap-2 p-2 border border-primary rounded-sm">
           <div className="lg:text-xl text-lg font-semibold sm:text-start text-center">
             {t("Main content")}
@@ -224,7 +258,12 @@ const Page = () => {
                         {
                           type: content.type,
                           order: prev.length + 1,
-                          content: "",
+                          content:
+                            content.type === "link"
+                              ? ({} as { label: string; url: string })
+                              : content.type === "image"
+                              ? ([] as string[])
+                              : "",
                         },
                       ]);
                     }}
@@ -304,46 +343,76 @@ const Page = () => {
                         </button>
                       </div>
                     </div>
-                    {content.type !== "image" ? (
+                    {content.type === "title" || content.type === "text" ? (
                       <div className="w-full bg-primary/20 border border-primary rounded-sm">
-                        {content.type !== "link" ? (
-                          <textarea
-                            className="w-full min-h-[80px] flex items-start justify-start text-start  p-2"
-                            placeholder={t(`Block: ${content.type}`)}
-                            value={content.content}
-                            onChange={(e) => {
-                              setSecondaryContent((prev) =>
-                                prev.map((item, index) =>
-                                  index === content.order - 1
-                                    ? {
-                                        ...item,
-                                        content: e.target.value,
-                                      }
-                                    : item
-                                )
-                              );
-                            }}
-                          />
-                        ) : (
+                        <textarea
+                          className="w-full min-h-[80px] flex items-start justify-start text-start  p-2"
+                          placeholder={t(`Block: ${content.type}`)}
+                          value={content.content as string}
+                          onChange={(e) => {
+                            setSecondaryContent((prev) =>
+                              prev.map((item, index) =>
+                                index === content.order - 1
+                                  ? {
+                                      ...item,
+                                      content: e.target.value,
+                                    }
+                                  : item
+                              )
+                            );
+                          }}
+                        />
+                      </div>
+                    ) : content.type === "link" ? (
+                      <div className="flex sm:flex-row flex-col gap-2">
+                        <div className="sm:w-1/2 w-full bg-primary/20 border border-primary rounded-sm">
                           <input
                             type="text"
                             className="w-full min-h-[40px] p-2"
-                            placeholder={t(`Block: ${content.type}`)}
-                            value={content.content}
+                            placeholder={t(`Link url`)}
+                            // value={label}
                             onChange={(e) => {
                               setSecondaryContent((prev) =>
                                 prev.map((item, index) =>
-                                  index === content.order - 1
+                                  index === content.order - 1 &&
+                                  typeof item.content === "object"
                                     ? {
                                         ...item,
-                                        content: e.target.value,
+                                        content: {
+                                          ...item.content,
+                                          label: e.target.value,
+                                        },
                                       }
                                     : item
                                 )
                               );
                             }}
                           />
-                        )}
+                        </div>
+                        <div className="sm:w-1/2 w-full bg-primary/20 border border-primary rounded-sm">
+                          <input
+                            type="text"
+                            className="w-full min-h-[40px] p-2"
+                            placeholder={t(`Link name`)}
+                            // value={url}
+                            onChange={(e) => {
+                              setSecondaryContent((prev) =>
+                                prev.map((item, index) =>
+                                  index === content.order - 1 &&
+                                  typeof item.content === "object"
+                                    ? {
+                                        ...item,
+                                        content: {
+                                          ...item.content,
+                                          url: e.target.value,
+                                        },
+                                      }
+                                    : item
+                                )
+                              );
+                            }}
+                          />
+                        </div>
                       </div>
                     ) : content.type === "image" ? (
                       <div className="min-h-[80px] w-[120px] relative h-10 cursor-pointer">
@@ -354,14 +423,17 @@ const Page = () => {
                         <input
                           type="file"
                           className="opacity-0 w-full z-10 h-full relative cursor-pointer"
-                          value={content.content}
+                          value={content.content as string}
                           onChange={(e) => {
                             setSecondaryContent((prev) =>
                               prev.map((item, index) =>
-                                index === content.order - 1
+                                index === content.order - 1 &&
+                                Array.isArray(item.content)
                                   ? {
                                       ...item,
-                                      content: e.target.value,
+                                      content: item.content.concat(
+                                        e.target.value
+                                      ),
                                     }
                                   : item
                               )
@@ -457,7 +529,10 @@ const Page = () => {
                           </div>
                         </button>
                       </DialogTrigger>
-                      <DialogContent className="z-[10002] sm:p-4 p-2 !max-w-[80vw] w-auto min-w-auto max-h-[80vw] flex flex-col">
+                      <DialogContent
+                        aria-description="image"
+                        className="z-[10002] sm:p-4 p-2 !max-w-[80vw] w-auto min-w-auto max-h-[80vw] flex flex-col"
+                      >
                         <DialogTitle>{t("Image")}</DialogTitle>
                         <div className="relative w-auto">
                           <img // eslint-disable-line
@@ -469,6 +544,18 @@ const Page = () => {
                       </DialogContent>
                     </Dialog>
                   </div>
+                </div>
+                <div className="flex justify-end w-full">
+                  <DialogClose asChild>
+                    <button
+                      onClick={() => {}}
+                      type="submit"
+                      className="rounded-sm cursor-pointer border border-primary px-2 py-1 bg-primary/50 dark:bg-primary/30 hover:bg-primary/70 dark:hover:bg-primary/10 text-black dark:text-white"
+                      form="myForm"
+                    >
+                      {t("Submit")}
+                    </button>
+                  </DialogClose>
                 </div>
               </div>
             </DialogContent>

@@ -7,7 +7,10 @@ export interface News {
   category: string;
   created_at: string;
   newsText: string;
-  status: "published" | "unpublished";
+  status?: "published" | "unpublished";
+  slug: string;
+  contents: SecondaryContent[];
+  redirectLink?: string;
 }
 
 export interface Category {
@@ -55,3 +58,26 @@ export type User = {
     role: "admin" | "user";
   };
 };
+
+export interface SecondaryContent {
+  type: "title" | "text" | "image" | "link";
+  content: string | string[] | { label: string; url: string };
+  order: number;
+}
+
+export interface ContentAdder {
+  type: "title" | "text" | "image" | "link";
+  label: string;
+  icon: React.ReactNode;
+}
+
+export interface RequestNews {
+  title: string;
+  description: string;
+  image: string;
+  category?: string;
+  status?: "published" | "unpublished";
+  slug: string;
+  contents: SecondaryContent[];
+  redirectLink?: string;
+}

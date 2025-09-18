@@ -1,7 +1,7 @@
 import express from "express";
 import { query } from "../middlewares/helper";
 
-import pool from "../db/mysql";
+import { createContents, createNews } from "../models/news";
 
 const newsRouter = express.Router();
 
@@ -50,7 +50,7 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
           ? row.content
           : row.type === "link"
           ? { label: row.content.label, url: row.content.url }
-          : row.content.value,
+          : row.content,
       order: row.order,
     }));
 
@@ -84,6 +84,43 @@ newsRouter.get("/categories", async (req: any, res: any) => {
     }
 
     res.status(200).json(rows);
+  } catch (error: any) {
+    if (res.status) {
+      res.status(500).json({ error: error.message });
+    } else {
+      throw new Error(error.message);
+    }
+  }
+});
+
+newsRouter.post("/create", async (req: any, res: any) => {
+  try {
+    const { title, description, image, redirectLink, slug, contents } =
+      req.body;
+
+    if (!image || !slug || !title || !description || !contents || !redirectLink)
+      return res.status(400).json({ error: "Invalid request" });
+
+    const category = req.body.category || "noCategory";
+    const status = req.body.status || "Unpublished";
+
+    const newsId = await createNews({
+      title,
+      description,
+      image,
+      category,
+      status,
+      redirectLink,
+      slug,
+      contents,
+    });
+
+    if (!newsId)
+      return res.status(400).json({ error: "database insert error" });
+
+    await createContents(contents, newsId);
+
+    return res.status(201).json({ newsId });
   } catch (error: any) {
     if (res.status) {
       res.status(500).json({ error: error.message });

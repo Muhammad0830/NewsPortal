@@ -151,6 +151,14 @@
         "title": "Title",
         "text": "Text",
         "link": "Link",
-        "Submit": "Submit"
+        "Submit": "Submit",
+        "Link url": "Link url",
+        "Link name": "Link name",
+        "Action Denied": "Action Denied",
+        "Fill all the necessary fields": "Fill all the necessary fields",
+        "News created successfully": "News created successfully",
+        "Go to news page": "Go to news page",
+        "Internal Server Error": "Internal Server Error",
+        "Action Failed": "Action Failed"
     }
 }

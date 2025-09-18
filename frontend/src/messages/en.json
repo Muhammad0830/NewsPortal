@@ -139,6 +139,7 @@
         "select an image": "Select an image",
         "image": "Image",
         "secondary content": "Secondary content",
+        "secondary": "Secondary",
         "Block: title": "Block: Title",
         "Block: text": "Block: Description",
         "Block: image": "Block: Image",
@@ -159,6 +160,14 @@
         "News created successfully": "News created successfully",
         "Go to news page": "Go to news page",
         "Internal Server Error": "Internal Server Error",
-        "Action Failed": "Action Failed"
+        "Action Failed": "Action Failed",
+        "Publish": "Publish",
+        "only submits without publishing": "only submits without publishing",
+        "both submits and publishes": "both submits and publishes",
+        "Submit button_": "Submit button:",
+        "Publish button_": "Publish button:",
+        "News published successfully": "News published successfully",
+        "News unpublished successfully": "News unpublished successfully",
+        "Unpublish": "Unpublish"
     }
 }

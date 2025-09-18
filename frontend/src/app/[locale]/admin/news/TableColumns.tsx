@@ -29,10 +29,11 @@ export const columns: ColumnDef<News>[] = [
     header: "Created At",
     cell: ({ row }) => {
       const createdAt = new Date(row.original.created_at);
+      const hours = createdAt.getHours().toString().padStart(2, "0");
+      const minutes = createdAt.getMinutes().toString().padStart(2, "0");
       return (
         <div>
-          {createdAt.toLocaleDateString()} {createdAt.getHours()}:
-          {createdAt.getMinutes()}
+          {createdAt.toLocaleDateString()} {hours}:{minutes}
         </div>
       );
     },

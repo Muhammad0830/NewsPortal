@@ -55,3 +55,27 @@ export const createContents = async (contents: any, newsId: string) => {
     throw new Error(error);
   }
 };
+
+export const publishNews = async (id: number) => {
+  try {
+    await query<any[]>("UPDATE news SET status = 'Published' WHERE id = ?", [
+      id,
+    ]);
+
+    return id;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+export const unPublishNews = async (id: number) => {
+  try {
+    await query<any[]>("UPDATE news SET status = 'Unpublished' WHERE id = ?", [
+      id,
+    ]);
+
+    return id;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};

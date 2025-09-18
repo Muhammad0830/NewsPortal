@@ -7,7 +7,7 @@ export interface News {
   category: string;
   created_at: string;
   newsText: string;
-  status?: "published" | "unpublished";
+  status?: "Published" | "Unpublished";
   slug: string;
   contents: SecondaryContent[];
   redirectLink?: string;

@@ -1,7 +1,12 @@
 import express from "express";
 import { query } from "../middlewares/helper";
 
-import { createContents, createNews } from "../models/news";
+import {
+  createContents,
+  createNews,
+  publishNews,
+  unPublishNews,
+} from "../models/news";
 
 const newsRouter = express.Router();
 
@@ -121,6 +126,39 @@ newsRouter.post("/create", async (req: any, res: any) => {
     await createContents(contents, newsId);
 
     return res.status(201).json({ newsId });
+  } catch (error: any) {
+    if (res.status) {
+      res.status(500).json({ error: error.message });
+    } else {
+      throw new Error(error.message);
+    }
+  }
+});
+
+newsRouter.put("/publish", async (req: any, res: any) => {
+  try {
+    const { id } = req.body;
+
+    const newsId = await publishNews(id);
+
+    res.status(200).json({ newsId });
+  } catch (error: any) {
+    if (res.status) {
+      res.status(500).json({ error: error.message });
+    } else {
+      throw new Error(error.message);
+    }
+  }
+});
+
+newsRouter.put("/unpublish", async (req: any, res: any) => {
+  try {
+    const { id } = req.body;
+    console.log('id', id)
+
+    const newsId = await unPublishNews(id);
+
+    res.status(200).json({ newsId });
   } catch (error: any) {
     if (res.status) {
       res.status(500).json({ error: error.message });

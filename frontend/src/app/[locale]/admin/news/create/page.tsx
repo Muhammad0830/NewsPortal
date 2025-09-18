@@ -62,6 +62,9 @@ const Page = () => {
   const [image, setImage] = useState<string>("");
   const [slug, setSlug] = useState<string>("");
   const [link, setLink] = useState<string>("");
+  const [publishORSubmit, setPublishORSubmit] = useState<"publish" | "submit">(
+    "submit"
+  );
   const t = useTranslations("adminNews");
   const router = useRouter();
 
@@ -79,7 +82,7 @@ const Page = () => {
       {
         title: mainTitle,
         description: description,
-        status: "unpublished",
+        status: publishORSubmit === "publish" ? "published" : "unpublished",
         image: image,
         redirectLink: link,
         slug: slug,
@@ -88,6 +91,12 @@ const Page = () => {
       {
         onSuccess: () => {
           toast(t("News created successfully"));
+          setMainTitle("");
+          setDescription("");
+          setImage("");
+          setSlug("");
+          setLink("");
+          setSecondaryContent([]);
         },
         onError: (error) => {
           toast(t("Action Failed"), {
@@ -134,7 +143,7 @@ const Page = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-2 mb-4 mt-2">
+      <div className="flex items-center justify-between gap-2 mb-3 mt-2">
         <div className="lg:text-3xl md:text-xl text-lg font-bold">
           {t("Create News")}
         </div>
@@ -147,9 +156,9 @@ const Page = () => {
       </div>
 
       <form
-        id="myForm"
+        id="submitForm"
         onSubmit={handleSubmit}
-        className="flex flex-col gap-4 mb-4"
+        className="flex flex-col gap-3 mb-2"
       >
         <div className="flex flex-col gap-2 p-2 border border-primary rounded-sm">
           <div className="lg:text-xl text-lg font-semibold sm:text-start text-center">
@@ -186,7 +195,7 @@ const Page = () => {
 
           <div>
             <div>{t("image")}*</div>
-            <div className="relative h-10 w-1/3 cursor-pointer">
+            <div className="relative h-10 md:w-1/2 max-w-[400px] sm:w-[300px] w-full cursor-pointer">
               <div className="absolute cursor-pointer inset-0 dark:bg-black bg-white border border-primary rounded-sm flex items-center justify-start  z-0 px-2 py-1">
                 <div className="absolute inset-0 bg-primary/20 dark:bg-primary/30 rounded-sm"></div>
                 {t("select an image")}
@@ -241,7 +250,8 @@ const Page = () => {
         <div className="flex flex-col gap-2 p-2 border border-primary rounded-sm">
           <div className="flex sm:flex-row flex-col items-center gap-2 justify-between">
             <div className="lg:text-xl text-lg font-semibold">
-              {t("secondary content")}
+              <span className="block lg:hidden">{t("secondary")}</span>
+              <span className="lg:block hidden">{t("secondary content")}</span>
             </div>
             <div className="flex items-center gap-2 justify-end">
               <div className="py-1 sm:block hidden">
@@ -453,113 +463,146 @@ const Page = () => {
           </div>
         </div>
 
-        <div className="w-full flex justify-end">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                type="button"
-                className="rounded-sm cursor-pointer"
-                disabled={
-                  !mainTitle || !description || !image || !link || !slug
-                }
+        <div className="w-full flex sm:flex-row flex-col justify-between gap-2">
+          <div className="flex flex-col text-sm font-semibold text-black/70 dark:text-white/50 sm:order-1 order-2 sm:text-start text-center">
+            <span>
+              <span className="text-black dark:text-white">
+                {t("Submit button_")}
+              </span>{" "}
+              {t("only submits without publishing")}
+            </span>
+            <span>
+              <span className="text-black dark:text-white">
+                {t("Publish button_")}
+              </span>{" "}
+              {t("both submits and publishes")}
+            </span>
+          </div>
+          <div className="flex items-center sm:justify-end justify-center gap-2 sm:order-2 order-1">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  className="rounded-sm cursor-pointer"
+                  onClick={() => setPublishORSubmit("publish")}
+                  disabled={
+                    !mainTitle || !description || !image || !link || !slug
+                  }
+                >
+                  {t("Publish")}
+                </Button>
+              </DialogTrigger>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  className="rounded-sm cursor-pointer"
+                  onClick={() => setPublishORSubmit("submit")}
+                  disabled={
+                    !mainTitle || !description || !image || !link || !slug
+                  }
+                >
+                  {t("Submit")}
+                </Button>
+              </DialogTrigger>
+              <DialogOverlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000]" />
+              <DialogContent
+                aria-description="form values"
+                className="md:min-w-[700px] w-[80vw] md:max-w-auto !max-w-[500px] z-[10001] sm:p-4 p-2"
               >
-                {t("Submit")}
-              </Button>
-            </DialogTrigger>
-            <DialogOverlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000]" />
-            <DialogContent
-              aria-description="form values"
-              className="md:min-w-[700px] w-[80vw] md:max-w-auto !max-w-[500px] z-[10001] sm:p-4 p-2"
-            >
-              <DialogTitle>Form Values</DialogTitle>
-              <div className="w-full flex flex-col gap-2">
-                <div className="p-2 rounded-md border border-primary flex flex-col justify-between gap-2 relative min-h-[145px]">
-                  <div className="lg:text-xl text-lg font-bold">
-                    {t("Main content")}
-                  </div>
-                  <div className="flex sm:flex-row flex-col justify-between gap-2">
-                    <div className="flex flex-col gap-2 w-[80%] sm:max-w-[calc(100%-130px)]">
-                      <div>
-                        <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
-                          <span className="font-semibold">{t("Title")}</span>:{" "}
-                          {mainTitle}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
-                          <span className="font-semibold">
-                            {t("Description")}
-                          </span>
-                          : {description}
-                        </span>
-                      </div>
-                      <div className="flex sm:flex-row flex-col gap-2 sm:items-center">
+                <DialogTitle>Form Values</DialogTitle>
+                <div className="w-full flex flex-col gap-2">
+                  <div className="p-2 rounded-md border border-primary flex flex-col justify-between gap-2 relative min-h-[145px]">
+                    <div className="lg:text-xl text-lg font-bold">
+                      {t("Main content")}
+                    </div>
+                    <div className="flex sm:flex-row flex-col justify-between gap-2">
+                      <div className="flex flex-col gap-2 w-[80%] sm:max-w-[calc(100%-130px)]">
                         <div>
                           <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
-                            <span className="font-semibold">{t("Slug")}</span>:{" "}
-                            {slug}
+                            <span className="font-semibold">{t("Title")}</span>:{" "}
+                            {mainTitle}
                           </span>
                         </div>
                         <div>
                           <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
                             <span className="font-semibold">
-                              {t("redirectURL")}
+                              {t("Description")}
                             </span>
-                            : {link}
+                            : {description}
                           </span>
                         </div>
-                      </div>
-                    </div>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <button className="sm:absolute relative sm:top-2 sm:right-2 flex flex-col gap-2 items-start justify-center w-full sm:w-[127px] sm:cursor-pointer">
-                          <div className="absolute top-2 left-2 sm:px-1 px-2 sm:py-0 py-0.5 sm:rounded-xs rounded-sm sm:border border-primary bg-white dark:bg-black overflow-hidden z-10 sm:h-[18px] flex items-center">
-                            <div className="absolute inset-0 sm:bg-primary/70 bg-primary/40 dark:bg-primary/20"></div>
-                            <span className="relative z-10 text-sm font-semibold">
-                              {t("image")}
+                        <div className="flex sm:flex-row flex-col gap-2 sm:items-center">
+                          <div>
+                            <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
+                              <span className="font-semibold">{t("Slug")}</span>
+                              : {slug}
                             </span>
                           </div>
-                          <div className="z-1 w-full sm:aspect-square sm:h-auto h-[200px] max-[400px]:h-[150px] border border-primary rounded-sm overflow-hidden relative cursor-pointer">
-                            <Image
+                          <div>
+                            <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
+                              <span className="font-semibold">
+                                {t("redirectURL")}
+                              </span>
+                              : {link}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <button className="sm:absolute relative sm:top-2 sm:right-2 flex flex-col gap-2 items-start justify-center w-full sm:w-[127px] sm:cursor-pointer">
+                            <div className="absolute top-2 left-2 sm:px-1 px-2 sm:py-0 py-0.5 sm:rounded-xs rounded-sm sm:border border-primary bg-white dark:bg-black overflow-hidden z-10 sm:h-[18px] flex items-center">
+                              <div className="absolute inset-0 sm:bg-primary/70 bg-primary/40 dark:bg-primary/20"></div>
+                              <span className="relative z-10 text-sm font-semibold">
+                                {t("image")}
+                              </span>
+                            </div>
+                            <div className="z-1 w-full sm:aspect-square sm:h-auto h-[200px] max-[400px]:h-[150px] border border-primary rounded-sm overflow-hidden relative cursor-pointer">
+                              {image ? (
+                                <Image
+                                  src={image}
+                                  alt="image"
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : null}
+                            </div>
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent
+                          aria-description="image"
+                          className="z-[10002] sm:p-4 p-2 !max-w-[80vw] w-auto min-w-auto max-h-[80vw] flex flex-col"
+                        >
+                          <DialogTitle>{t("Image")}</DialogTitle>
+                          <div className="relative w-auto">
+                            <img // eslint-disable-line
                               src={image}
                               alt="image"
-                              fill
-                              className="object-cover"
+                              className="w-auto h-auto"
                             />
                           </div>
-                        </button>
-                      </DialogTrigger>
-                      <DialogContent
-                        aria-description="image"
-                        className="z-[10002] sm:p-4 p-2 !max-w-[80vw] w-auto min-w-auto max-h-[80vw] flex flex-col"
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
+                  <div className="flex justify-end w-full">
+                    <DialogClose asChild>
+                      <button
+                        onClick={() => {}}
+                        type="submit"
+                        className="rounded-sm cursor-pointer border border-primary px-2 py-1 bg-primary/50 dark:bg-primary/30 hover:bg-primary/70 dark:hover:bg-primary/10 text-black dark:text-white"
+                        form="submitForm"
                       >
-                        <DialogTitle>{t("Image")}</DialogTitle>
-                        <div className="relative w-auto">
-                          <img // eslint-disable-line
-                            src={image}
-                            alt="image"
-                            className="w-auto h-auto"
-                          />
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                        {publishORSubmit === "submit"
+                          ? t("Submit")
+                          : t("Publish")}
+                      </button>
+                    </DialogClose>
                   </div>
                 </div>
-                <div className="flex justify-end w-full">
-                  <DialogClose asChild>
-                    <button
-                      onClick={() => {}}
-                      type="submit"
-                      className="rounded-sm cursor-pointer border border-primary px-2 py-1 bg-primary/50 dark:bg-primary/30 hover:bg-primary/70 dark:hover:bg-primary/10 text-black dark:text-white"
-                      form="myForm"
-                    >
-                      {t("Submit")}
-                    </button>
-                  </DialogClose>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </form>
     </div>

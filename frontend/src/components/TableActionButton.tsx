@@ -8,18 +8,64 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { Payment } from "@/types/types";
+import { CirclePlus, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { News } from "@/types/types";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { useApiMutation } from "@/hooks/useApiMutation";
+import { toast } from "sonner";
 
-const TableActionButton = ({ payment }: { payment: Payment }) => {
+const TableActionButton = ({ payment }: { payment: News }) => {
   const t = useTranslations("adminNews");
   const router = useRouter();
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: number) => {
     console.log("delete", id);
   };
+
+  const handlePublish = async (id: number) => {
+    publish(
+      { id },
+      {
+        onSuccess: () => {
+          toast(t("News published successfully"));
+        },
+        onError: (error) => {
+          toast(t("Action Failed"), {
+            description: t("Internal Server Error"),
+          });
+          console.error(error);
+        },
+      }
+    );
+  };
+
+  const handleUnPublish = async (id: number) => {
+    unpublish(
+      { id },
+      {
+        onSuccess: () => {
+          toast(t("News unpublished successfully"));
+        },
+        onError: (error) => {
+          toast(t("Action Failed"), {
+            description: t("Internal Server Error"),
+          });
+          console.error(error);
+        },
+      }
+    );
+  };
+
+  const { mutate: publish } = useApiMutation<{ id: number }, { id: number }>(
+    "/news/publish",
+    "put"
+  );
+
+  const { mutate: unpublish } = useApiMutation<{ id: number }, { id: number }>(
+    "/news/publish",
+    "put"
+  );
 
   return (
     <DropdownMenu>
@@ -39,7 +85,7 @@ const TableActionButton = ({ payment }: { payment: Payment }) => {
         <div className="absolute inset-0 bg-primary/10"></div>
         <DropdownMenuItem
           onClick={() => router.push(`/admin/news/${payment.id}`)}
-          className="flex items-center gap-2 hover:!bg-primary/30"
+          className="flex items-center gap-2 hover:!bg-primary/30 cursor-pointer"
         >
           <Eye />
           <span>{t("View")}</span>
@@ -47,7 +93,7 @@ const TableActionButton = ({ payment }: { payment: Payment }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => router.push(`/admin/news/edit/${payment.id}`)}
-          className="flex items-center gap-2 hover:!bg-primary/30"
+          className="flex items-center gap-2 hover:!bg-primary/30 cursor-pointer"
         >
           <Pencil />
           <span>{t("Edit")}</span>
@@ -56,11 +102,28 @@ const TableActionButton = ({ payment }: { payment: Payment }) => {
 
         <DropdownMenuItem
           onClick={() => handleDelete(payment.id)}
-          className="flex items-center gap-2 hover:!bg-primary/30"
+          className="flex items-center gap-2 hover:!bg-primary/30 cursor-pointer"
         >
           <Trash2 />
           <span>{t("Delete")}</span>
         </DropdownMenuItem>
+        {payment.status === "Unpublished" ? (
+          <DropdownMenuItem
+            onClick={() => handlePublish(payment.id)}
+            className="flex items-center gap-2 hover:!bg-primary/30 cursor-pointer"
+          >
+            <CirclePlus />
+            <span>{t("Publish")}</span>
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem
+            onClick={() => handleUnPublish(payment.id)}
+            className="flex items-center gap-2 hover:!bg-primary/30 cursor-pointer"
+          >
+            <CirclePlus />
+            <span>{t("Unpublish")}</span>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

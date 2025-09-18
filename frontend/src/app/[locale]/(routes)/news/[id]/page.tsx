@@ -15,7 +15,7 @@ const Page = () => {
   const [news, setNews] = useState<NewsData | null>(null);
 
   const { data: newsData, isLoading } = useApiQuery<NewsData>(
-    `/news/each/${1}`,
+    `/news/each/${id}`,
     ["EachNews"]
   );
 
@@ -86,7 +86,8 @@ const Page = () => {
                       >
                         <Image
                           className="object-cover"
-                          src={c.content[0]}
+                          // src={c.content[0]}
+                          src="/images/news1.jpg"
                           alt={`news${c.order}`}
                           fill
                         />
@@ -103,7 +104,8 @@ const Page = () => {
                             >
                               <Image
                                 className="object-cover"
-                                src={img}
+                                // src={img}
+                                src={'/images/news1.jpg'}
                                 alt={`news${c.order}`}
                                 fill
                               />

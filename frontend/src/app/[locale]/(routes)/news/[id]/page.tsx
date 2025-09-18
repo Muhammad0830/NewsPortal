@@ -41,7 +41,7 @@ const Page = () => {
       <div className="w-full mt-5 shadow-[0px_0px_30px_2px_#000000] rounded-md p-2 mb-6">
         <div className="mb-3 relative lg:min-w-[800px] lg:max-h-[300px] sm:min-w-[500px] min-w-[200px] sm:w-[65vw] w-[100%] max-w-[600px] aspect-video mx-auto rounded-md overflow-hidden">
           <Image
-            src={"/images/news1.jpg"}
+            src={news.mainImage}
             alt="news"
             fill
             className="object-cover"
@@ -86,8 +86,8 @@ const Page = () => {
                       >
                         <Image
                           className="object-cover"
-                          // src={c.content[0]}
-                          src="/images/news1.jpg"
+                          src={c.content[0]}
+                          // src="/images/news1.jpg"
                           alt={`news${c.order}`}
                           fill
                         />
@@ -104,8 +104,8 @@ const Page = () => {
                             >
                               <Image
                                 className="object-cover"
-                                // src={img}
-                                src={'/images/news1.jpg'}
+                                src={img}
+                                // src={'/images/news1.jpg'}
                                 alt={`news${c.order}`}
                                 fill
                               />

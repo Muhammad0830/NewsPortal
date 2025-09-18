@@ -21,10 +21,18 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { SecondaryContent, ContentAdder, RequestNews } from "@/types/types";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { toast } from "sonner";
+import { useEdgeStore } from "@/lib/edgestore";
+import { SingleImageDropzone } from "@/components/upload/single-image";
+import {
+  UploaderProvider,
+  type UploadFn,
+} from "@/components/upload/uploader-provider";
+import { ImageUploader } from "@/components/upload/multi-image";
+import { set } from "zod";
 
 const contentAdders: ContentAdder[] = [
   {
@@ -59,19 +67,24 @@ const Page = () => {
   );
   const [mainTitle, setMainTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [image, setImage] = useState<string>("");
   const [slug, setSlug] = useState<string>("");
   const [link, setLink] = useState<string>("");
   const [publishORSubmit, setPublishORSubmit] = useState<"publish" | "submit">(
     "submit"
   );
+  const [mainUrls, setMainUrls] = useState<{
+    url: string;
+    thumbnailUrl: string;
+  }>();
+  const [secondaryUrls, setSecondaryUrls] = useState<{ url: string }[]>([]);
+
   const t = useTranslations("adminNews");
   const router = useRouter();
+  const { edgestore } = useEdgeStore();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("working");
     e.preventDefault();
-    if (!mainTitle || !description || !image || !slug) {
+    if (!mainTitle || !description || !mainUrls?.url || !slug) {
       toast(t("Action Denied"), {
         description: t("Fill all the necessary fields"),
       });
@@ -83,20 +96,32 @@ const Page = () => {
         title: mainTitle,
         description: description,
         status: publishORSubmit === "publish" ? "published" : "unpublished",
-        image: image,
+        image: mainUrls?.url,
         redirectLink: link,
         slug: slug,
         contents: secondaryContent,
       },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
           toast(t("News created successfully"));
           setMainTitle("");
           setDescription("");
-          setImage("");
           setSlug("");
           setLink("");
           setSecondaryContent([]);
+
+          await edgestore.PublicImages.confirmUpload({
+            url: mainUrls?.url ? mainUrls.url : "",
+          });
+
+          secondaryUrls.forEach(async (url) => {
+            await edgestore.PublicImages.confirmUpload({
+              url: url.url,
+            });
+          });
+          setMainUrls({ url: "", thumbnailUrl: "" });
+          setSecondaryUrls([]);
+          router.push("/admin/news");
         },
         onError: (error) => {
           toast(t("Action Failed"), {
@@ -112,12 +137,58 @@ const Page = () => {
     "/news/create"
   );
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImage(URL.createObjectURL(file));
-    }
-  };
+  const uploadFn: UploadFn = useCallback(
+    async ({ file, onProgressChange, signal }) => {
+      const res = await edgestore.PublicImages.upload({
+        file,
+        signal,
+        onProgressChange,
+        options: {
+          temporary: true,
+        },
+      });
+      // you can run some server action or api here
+      // to add the necessary data to your database
+      console.log(res);
+      setMainUrls({
+        url: res.url,
+        thumbnailUrl: res.thumbnailUrl ? res.thumbnailUrl : res.url,
+      });
+      return res;
+    },
+    [edgestore]
+  );
+
+  const uploadSecondaryFn: UploadFn = useCallback(
+    async ({ order, file, onProgressChange, signal }) => {
+      const res = await edgestore.PublicImages.upload({
+        file,
+        signal,
+        onProgressChange,
+        options: { temporary: true },
+      });
+      setSecondaryUrls((prev) => [
+        ...prev,
+        {
+          url: res.url,
+        },
+      ]);
+      if (order) {
+        setSecondaryContent((prev) =>
+          prev.map((item, index) =>
+            index === order - 1 && Array.isArray(item.content)
+              ? {
+                  ...item,
+                  content: item.content.concat(res.url),
+                }
+              : item
+          )
+        );
+      }
+      return res;
+    },
+    [edgestore]
+  );
 
   const moveItem = (order: number, direction: "up" | "down") => {
     setSecondaryContent((prev) => {
@@ -195,27 +266,17 @@ const Page = () => {
 
           <div>
             <div>{t("image")}*</div>
-            <div className="relative h-10 md:w-1/2 max-w-[400px] sm:w-[300px] w-full cursor-pointer">
-              <div className="absolute cursor-pointer inset-0 dark:bg-black bg-white border border-primary rounded-sm flex items-center justify-start  z-0 px-2 py-1">
-                <div className="absolute inset-0 bg-primary/20 dark:bg-primary/30 rounded-sm"></div>
-                {t("select an image")}
-              </div>
-              <input
-                type="file"
-                className="opacity-0 w-full z-10 h-full relative cursor-pointer"
-                onChange={handleFileChange}
-              />
-              {/* to prevent image from being loaded | now it starts loading instantly after the upload */}
-              {image ? (
-                <div className="w-0 h-0 opacity-0">
-                  <Image
-                    src={image}
-                    alt="image"
-                    className="object-cover"
-                    fill
-                  />
-                </div>
-              ) : null}
+            <div className="relative h-24 inline-block">
+              <UploaderProvider uploadFn={uploadFn} autoUpload>
+                <SingleImageDropzone
+                  height={96}
+                  width={171}
+                  className="text-primary"
+                  dropzoneoptions={{
+                    maxSize: 1024 * 1024 * 5, // 1 MB
+                  }}
+                />
+              </UploaderProvider>
             </div>
           </div>
 
@@ -425,8 +486,24 @@ const Page = () => {
                         </div>
                       </div>
                     ) : content.type === "image" ? (
-                      <div className="min-h-[80px] w-[120px] relative h-10 cursor-pointer">
-                        <div className="absolute cursor-pointer inset-0 dark:bg-black bg-white border border-primary rounded-sm flex items-center justify-start  z-0 px-2 py-1">
+                      <div className="min-h-[80px] w-full relative cursor-pointer">
+                        <UploaderProvider
+                          uploadFn={(e) =>
+                            uploadSecondaryFn({
+                              file: e.file,
+                              onProgressChange: e.onProgressChange,
+                              signal: e.signal,
+                              order: content.order,
+                            })
+                          }
+                          autoUpload
+                        >
+                          <ImageUploader
+                            maxFiles={10}
+                            maxSize={1024 * 1024 * 5} // 5 MB
+                          />
+                        </UploaderProvider>
+                        {/* <div className="absolute cursor-pointer inset-0 dark:bg-black bg-white border border-primary rounded-sm flex items-center justify-start  z-0 px-2 py-1">
                           <div className="absolute inset-0 bg-primary/20 dark:bg-primary/30 rounded-sm"></div>
                           {t("select an image")}
                         </div>
@@ -449,7 +526,7 @@ const Page = () => {
                               )
                             );
                           }}
-                        />
+                        /> */}
                       </div>
                     ) : (
                       <div className="h-[40px] w-full flex justify-center items-center">
@@ -486,7 +563,11 @@ const Page = () => {
                   className="rounded-sm cursor-pointer"
                   onClick={() => setPublishORSubmit("publish")}
                   disabled={
-                    !mainTitle || !description || !image || !link || !slug
+                    !mainTitle ||
+                    !description ||
+                    !mainUrls?.url ||
+                    !link ||
+                    !slug
                   }
                 >
                   {t("Publish")}
@@ -498,7 +579,11 @@ const Page = () => {
                   className="rounded-sm cursor-pointer"
                   onClick={() => setPublishORSubmit("submit")}
                   disabled={
-                    !mainTitle || !description || !image || !link || !slug
+                    !mainTitle ||
+                    !description ||
+                    !mainUrls?.url ||
+                    !link ||
+                    !slug
                   }
                 >
                   {t("Submit")}
@@ -558,9 +643,9 @@ const Page = () => {
                               </span>
                             </div>
                             <div className="z-1 w-full sm:aspect-square sm:h-auto h-[200px] max-[400px]:h-[150px] border border-primary rounded-sm overflow-hidden relative cursor-pointer">
-                              {image ? (
+                              {mainUrls?.url ? (
                                 <Image
-                                  src={image}
+                                  src={mainUrls?.url}
                                   alt="image"
                                   fill
                                   className="object-cover"
@@ -575,11 +660,13 @@ const Page = () => {
                         >
                           <DialogTitle>{t("Image")}</DialogTitle>
                           <div className="relative w-auto">
-                            <img // eslint-disable-line
-                              src={image}
-                              alt="image"
-                              className="w-auto h-auto"
-                            />
+                            {mainUrls?.url ? (
+                              <img // eslint-disable-line
+                                src={mainUrls?.url}
+                                alt="image"
+                                className="w-auto h-auto"
+                              />
+                            ) : null}
                           </div>
                         </DialogContent>
                       </Dialog>

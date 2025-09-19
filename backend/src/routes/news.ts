@@ -34,7 +34,6 @@ newsRouter.get("/", async (req: any, res: any) => {
 newsRouter.get("/each/:id", async (req: any, res: any) => {
   try {
     const newsId = req.params.id;
-    console.log("id1", newsId);
 
     const rows = await query<any[]>(
       `SELECT n.id, n.title, n.image, n.created_at, n.category, n.description, n.status, n.slug, n.redirectLink,
@@ -51,8 +50,6 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
     }
 
     const base = rows[0];
-
-    console.log("id2", newsId);
 
     const contents = rows.map((row) => ({
       type: row.type,
@@ -77,7 +74,6 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
       slug: base.slug,
       status: base.status,
     };
-    console.log("id3", newsId);
 
     res.status(200).json(result);
   } catch (err: any) {
@@ -109,14 +105,13 @@ newsRouter.get("/categories", async (req: any, res: any) => {
 
 newsRouter.post("/create", async (req: any, res: any) => {
   try {
-    const { title, description, image, redirectLink, slug, contents } =
+    const { title, description, image, redirectLink, slug, contents, status } =
       req.body;
 
     if (!image || !slug || !title || !description || !contents || !redirectLink)
       return res.status(400).json({ error: "Invalid request" });
 
     const category = req.body.category || "noCategory";
-    const status = req.body.status || "Unpublished";
 
     const newsId = await createNews({
       title,

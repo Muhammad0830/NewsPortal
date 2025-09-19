@@ -60,7 +60,7 @@ const Page = () => {
         />
       </div>
 
-      <div className="relative z-0">
+      <div className="relative z-0 mb-4">
         <DataTable columns={columns(refetch, locale)} data={data} />
       </div>
     </div>

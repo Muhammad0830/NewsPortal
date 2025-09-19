@@ -520,7 +520,15 @@ const Page = () => {
                   className="rounded-sm cursor-pointer"
                   onClick={() => setPublishORSubmit("publish")}
                   disabled={
-                    !titles || !descriptions || !mainUrls?.url || !link || !slug
+                    !titles.ru ||
+                    !titles.en ||
+                    !titles.uz ||
+                    !descriptions.ru ||
+                    !descriptions.en ||
+                    !descriptions.uz ||
+                    !mainUrls?.url ||
+                    !link ||
+                    !slug
                   }
                 >
                   {t("Publish")}
@@ -532,7 +540,15 @@ const Page = () => {
                   className="rounded-sm cursor-pointer"
                   onClick={() => setPublishORSubmit("submit")}
                   disabled={
-                    !titles || !descriptions || !mainUrls?.url || !link || !slug
+                    !titles.ru ||
+                    !titles.en ||
+                    !titles.uz ||
+                    !descriptions.ru ||
+                    !descriptions.en ||
+                    !descriptions.uz ||
+                    !mainUrls?.url ||
+                    !link ||
+                    !slug
                   }
                 >
                   {t("Submit")}
@@ -541,38 +557,71 @@ const Page = () => {
               <DialogOverlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000]" />
               <DialogContent
                 aria-description="form values"
-                className="md:min-w-[700px] w-[80vw] md:max-w-auto !max-w-[500px] z-[10001] sm:p-4 p-2"
+                className="md:min-w-auto !w-[80vw] md:max-w-auto !max-w-[1500px] z-[10001] sm:p-4 p-2"
               >
-                <DialogTitle>Form Values</DialogTitle>
+                <DialogTitle className="lg:text-2xl sm:text-xl text-lg font-semibold">
+                  {t("Form Values")}
+                </DialogTitle>
                 <div className="w-full flex flex-col gap-2">
                   <div className="p-2 rounded-md border border-primary flex flex-col justify-between gap-2 relative min-h-[145px]">
-                    <div className="lg:text-xl text-lg font-bold">
+                    <div className="lg:text-xl text-lg font-bold mb-2">
                       {t("Main content")}
                     </div>
                     <div className="flex sm:flex-row flex-col justify-between gap-2">
-                      <div className="flex flex-col gap-2 w-[80%] sm:max-w-[calc(100%-130px)]">
+                      <div className="flex flex-col gap-4 sm:w-[calc(100%-170px)]">
                         <div>
-                          <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
-                            <span className="font-semibold">{t("Title")}</span>:{" "}
-                            {locale === "ru"
-                              ? titles.ru
-                              : locale === "uz"
-                              ? titles.uz
-                              : titles.en}
-                          </span>
+                          <div className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20 inline-block">
+                            <div className="flex">
+                              <span className="font-semibold">
+                                {t("Title")}:
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {titles.en}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  en
+                                </span>
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {titles.ru}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  ru
+                                </span>
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {titles.uz}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  uz
+                                </span>
+                              </span>
+                            </div>
+                          </div>
                         </div>
                         <div>
-                          <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
-                            <span className="font-semibold">
-                              {t("Description")}
-                            </span>
-                            :{" "}
-                            {locale === "ru"
-                              ? descriptions.ru
-                              : locale === "uz"
-                              ? descriptions.uz
-                              : descriptions.en}
-                          </span>
+                          <div className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20 inline-block">
+                            <div className="flex">
+                              <span className="font-semibold">
+                                {t("Description")}:
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {descriptions.en}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  en
+                                </span>
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {descriptions.ru}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  ru
+                                </span>
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {descriptions.uz}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  uz
+                                </span>
+                              </span>
+                            </div>
+                          </div>
                         </div>
                         <div className="flex sm:flex-row flex-col gap-2 sm:items-center">
                           <div>
@@ -593,7 +642,7 @@ const Page = () => {
                       </div>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <button className="sm:absolute relative sm:top-2 sm:right-2 flex flex-col gap-2 items-start justify-center w-full sm:w-[127px] sm:cursor-pointer">
+                          <button className="sm:absolute relative sm:top-2 sm:right-2 flex flex-col gap-2 items-start justify-center w-full sm:w-[155px] sm:cursor-pointer">
                             <div className="absolute top-2 left-2 sm:px-1 px-2 sm:py-0 py-0.5 sm:rounded-xs rounded-sm sm:border border-primary bg-white dark:bg-black overflow-hidden z-10 sm:h-[18px] flex items-center">
                               <div className="absolute inset-0 sm:bg-primary/70 bg-primary/40 dark:bg-primary/20"></div>
                               <span className="relative z-10 text-sm font-semibold">

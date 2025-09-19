@@ -50,8 +50,8 @@ export const columns = (
       const hours = createdAt.getHours().toString().padStart(2, "0");
       const minutes = createdAt.getMinutes().toString().padStart(2, "0");
       return (
-        <div>
-          {createdAt.toLocaleDateString()} {hours}:{minutes}
+        <div className="flex gap-1">
+          {createdAt.toLocaleDateString()} <span className="lg:flex md:hidden flex">{hours}:{minutes}</span>
         </div>
       );
     },

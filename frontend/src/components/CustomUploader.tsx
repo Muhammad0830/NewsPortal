@@ -58,10 +58,6 @@ export default function ImageUploader({
     onChange(images.filter((img) => img !== url));
   };
 
-  if (images.length < 2) {
-    console.log("images", images);
-  }
-
   return (
     <div className="">
       {multiple || images.length === 0 ? (

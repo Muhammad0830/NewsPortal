@@ -253,13 +253,12 @@ const Page = () => {
                 images={
                   (mainUrls?.url as string) ? ([mainUrls?.url] as string[]) : []
                 }
-                onChange={(image) => {
-                  console.log("image", image);
+                onChange={(image) =>
                   setMainUrls({
                     url: image[0],
                     thumbnailUrl: image[0],
-                  });
-                }}
+                  })
+                }
                 multiple={false}
               />
             </div>

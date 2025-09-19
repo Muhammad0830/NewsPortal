@@ -2,6 +2,16 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+ after cloning the project from github, you need to install the dependencies by running the command
+# npm install
+
+after that, you need to create a .env file in the root directory of the project and add the following lines to it: (you can use my edgeStore keys for testing)
+
+# NEXT_PUBLIC_API_URL = "http://localhost:3001"
+
+# EDGE_STORE_ACCESS_KEY=upmDg7cTz3fp7rK7edXWvNz8wAcvpG9I
+# EDGE_STORE_SECRET_KEY=boR3TUx68V5mr4xCHWgGUH6Ur9KHTWKpif9QD5TcBrT00e8u
+
 First, run the development server:
 
 ```bash

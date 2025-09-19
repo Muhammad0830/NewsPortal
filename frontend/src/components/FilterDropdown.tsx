@@ -39,16 +39,16 @@ const FilterDropdown = ({
   return (
     <div
       ref={dropdownRef}
-      className="relative lg:w-[200px] sm:w-[150px] w-8 h-8 z-10 sm:text-[16px] text-xs"
+      className="relative lg:w-auto sm:min-w-[200px] sm:w-[150px] w-8 h-8 z-10 sm:text-[16px] text-xs"
     >
       <button
         onClick={() => setFilterOpen((prev) => !prev)}
         className={cn(
-          "relative flex justify-center items-center w-full h-full rounded-sm cursor-pointer border border-primary sm:bg-primary/30 sm:dark:bg-primary/50 hover:bg-primary/50 dark:hover:bg-primary/20",
+          "relative flex sm:px-2 justify-center items-center w-full h-full rounded-sm cursor-pointer border border-primary sm:bg-primary/30 sm:dark:bg-primary/50 hover:bg-primary/50 dark:hover:bg-primary/20",
           selectedFilter !== "All" ? "bg-primary/50" : ""
         )}
       >
-        <span className="sm:flex hidden">
+        <span className="sm:flex hidden text-nowrap">
           {t("Filter by")} {t(selectedFilter || "All")}
         </span>
         <span className="flex sm:hidden w-4/5 h-4/5">
@@ -58,10 +58,10 @@ const FilterDropdown = ({
 
       <div
         className={cn(
-          "sm:w-full sm:right-auto right-0 flex flex-col gap-1 absolute rounded-sm p-1.5 border border-primary bg-white dark:bg-black transition-all duration-300 origin-top",
+          "sm:w-full min-w-[150px] sm:right-auto right-0 flex flex-col gap-1 absolute rounded-sm p-1.5 border border-primary bg-white dark:bg-black transition-all duration-300 origin-top-right sm:origin-top",
           filterOpen
             ? "top-[115%] opacity-[100] scale-[1]"
-            : "top-[90%] opacity-0 scale-y-0"
+            : "top-[90%] opacity-0 scale-0 sm:scale-y-0"
         )}
       >
         <div className="absolute inset-0 z-0 bg-primary/10 dark:bg-primary/30 "></div>

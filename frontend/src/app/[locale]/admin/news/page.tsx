@@ -6,7 +6,6 @@ import { DataTable } from "@/components/DataTable";
 import { columns } from "./TableColumns";
 import { News } from "@/types/types";
 import useApiQuery from "@/hooks/useApiQiery";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "@/i18n/navigation";
 import { usePathname } from "next/navigation";
 
@@ -37,16 +36,16 @@ const Page = () => {
         <span className="lg:text-3xl md:text-xl text-lg font-bold">
           {t("All News")}
         </span>
-        <Button
+        <button
           onClick={() => router.push("/admin/news/create")}
-          className="cursor-pointer bg-primary/30 hover:bg-primary/60 dark:bg-primary/50 dark:hover:bg-primary/30 border border-primary text-black dark:text-white"
+          className="rounded-sm px-2 py-1 cursor-pointer bg-primary/30 hover:bg-primary/60 dark:bg-primary/50 dark:hover:bg-primary/30 border border-primary text-black dark:text-white sm:text-[16px] text-xs"
         >
           {t("Create News")}
-        </Button>
+        </button>
       </div>
       {/* search & filter */}
       <div className="flex gap-2 items-center justify-between w-full mb-4 z-10 relative">
-        <div className="md:min-w-[300px] sm:min-w-[200px] min-w-[150px] w-[30%] h-8">
+        <div className="md:min-w-[250px] lg:min-w-[300px] min-w-[200px] w-[30%] h-8">
           <input
             type="text"
             className="w-full h-full p-2 rounded-sm bg-primary/30 dark:bg-primary/50 border border-primary"

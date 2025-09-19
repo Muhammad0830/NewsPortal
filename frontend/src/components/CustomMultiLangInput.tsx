@@ -53,7 +53,7 @@ export default function CustomMultiLangInput({
             value={lang}
             aria-label={langNames[lang]}
             className={cn(
-              "cursor-pointer min-w-[100px] border border-primary bg-primary/20 hover:bg-primary/40 dark:hover:bg-primary/10",
+              "cursor-pointer lg:min-w-[100px] lg:text-sm text-xs min-w-[70px] border border-primary bg-primary/20 hover:bg-primary/40 dark:hover:bg-primary/10",
               i === 0 && "border-r-transparent",
               i === 1 && "border-x-transparent",
               i === 2 && "border-l-transparent",

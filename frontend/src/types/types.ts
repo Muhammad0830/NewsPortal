@@ -60,7 +60,7 @@ export type User = {
 };
 
 export interface SecondaryContent {
-  type: "title" | "text" | "image" | "link";
+  type: "title" | "text" | "newsText" | "image" | "link";
   content: string | string[] | { label: string; url: string };
   order: number;
 }
@@ -72,11 +72,28 @@ export interface ContentAdder {
 }
 
 export interface RequestNews {
+  id?: number;
   title: string;
   description: string;
   image: string;
   category?: string;
   status?: "published" | "unpublished";
+  slug: string;
+  contents: SecondaryContent[];
+  redirectLink?: string;
+}
+
+export interface NewsResponse {
+  id: number;
+  mainTitle: string;
+  title: string;
+  description: string;
+  url: string;
+  mainImage: string;
+  category: string;
+  created_at: string;
+  newsText: string;
+  status?: "Published" | "Unpublished";
   slug: string;
   contents: SecondaryContent[];
   redirectLink?: string;

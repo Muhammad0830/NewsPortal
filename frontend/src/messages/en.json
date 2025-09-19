@@ -169,6 +169,13 @@
         "News published successfully": "News published successfully",
         "News unpublished successfully": "News unpublished successfully",
         "Unpublish": "Unpublish",
-        "click to select": "click to select"
+        "click to select": "click to select",
+        "No such news found": "No such news found",
+        "Go back to news": "Go back to news",
+        "News": "News",
+        "Edit news": "Edit news",
+        "Single News Page": "Single News Page",
+        "Edit News": "Edit News",
+        "Form Values": "Form Values"
     }
 }

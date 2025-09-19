@@ -33,7 +33,7 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
     const newsId = req.params.id;
 
     const rows = await query<any[]>(
-      `SELECT n.id, n.title, n.newsText, n.image, n.created_at, n.category, n.description,
+      `SELECT n.id, n.title, n.newsText, n.image, n.created_at, n.category, n.description, n.status, n.slug, n.redirectLink,
               c.type, c.content, c.\`order\`
        FROM news n
        JOIN contents c ON n.id = c.newsId
@@ -68,6 +68,9 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
       category: base.category,
       createdAt: base.createdAt,
       contents: contents,
+      redirectLink: base.redirectLink,
+      slug: base.slug,
+      status: base.status,
     };
 
     res.status(200).json(result);
@@ -158,6 +161,51 @@ newsRouter.put("/unpublish", async (req: any, res: any) => {
     const newsId = await unPublishNews(id);
 
     res.status(200).json({ newsId });
+  } catch (error: any) {
+    if (res.status) {
+      res.status(500).json({ error: error.message });
+    } else {
+      throw new Error(error.message);
+    }
+  }
+});
+
+newsRouter.put("/update", async (req: any, res: any) => {
+  try {
+    const { id, title, description, image, redirectLink, slug, contents } =
+      req.body;
+
+    if (
+      !id ||
+      !image ||
+      !slug ||
+      !title ||
+      !description ||
+      !contents ||
+      !redirectLink
+    )
+      return res.status(400).json({ error: "Invalid request" });
+
+    const category = req.body.category || "noCategory";
+    const status = req.body.status || "Unpublished";
+
+    const newsId = await createNews({
+      title,
+      description,
+      image,
+      category,
+      status,
+      redirectLink,
+      slug,
+      contents,
+    });
+
+    if (!newsId)
+      return res.status(400).json({ error: "database insert error" });
+
+    await createContents(contents, newsId);
+
+    return res.status(201).json({ newsId });
   } catch (error: any) {
     if (res.status) {
       res.status(500).json({ error: error.message });

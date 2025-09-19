@@ -32,7 +32,6 @@ import {
   type UploadFn,
 } from "@/components/upload/uploader-provider";
 import { ImageUploader } from "@/components/upload/multi-image";
-import { set } from "zod";
 
 const contentAdders: ContentAdder[] = [
   {

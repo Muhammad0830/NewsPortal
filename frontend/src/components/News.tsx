@@ -5,11 +5,15 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 
 const NewsCard = ({ news, index }: { news: News; index: number }) => {
   const t = useTranslations("News");
   const created_atData = new Date(news.created_at);
   const updatedCreatedAt = created_atData.toLocaleDateString();
+
+  const pathName = usePathname();
+  const locale = pathName.split("/")[1];
 
   return (
     <Link
@@ -35,10 +39,18 @@ const NewsCard = ({ news, index }: { news: News; index: number }) => {
           {updatedCreatedAt}
         </div>
         <div className="md:text-xl sm:text-lg text-sm sm:font-bold font-semibold line-clamp-1">
-          {news.title}
+          {locale === "ru"
+            ? news.title.ru
+            : locale === "uz"
+            ? news.title.uz
+            : news.title.en}
         </div>
         <div className="md:text-[16px] sm:text-sm text-xs sm:font-semibold font-normal line-clamp-1">
-          {news.newsText}
+          {locale === "ru"
+            ? news.description.ru
+            : locale === "uz"
+            ? news.description.uz
+            : news.description.en}
         </div>
       </div>
     </Link>

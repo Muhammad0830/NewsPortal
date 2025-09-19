@@ -10,8 +10,8 @@ export const createNews = async (news: any) => {
       `INSERT INTO news (title, description, image, category, status, redirectLink, slug) 
         VALUES (:title, :description, :image, :category, :status, :redirectLink, :slug)`,
       {
-        title: title,
-        description: description,
+        title: JSON.stringify(title),
+        description: JSON.stringify(description),
         image: image,
         category: category,
         status: status,
@@ -37,7 +37,7 @@ export const createContents = async (contents: any, newsId: string) => {
         "INSERT INTO contents (newsId, type, content, `order`) VALUES (:newsId, :type, :content, :order)",
         {
           newsId,
-          type: content.type === "text" ? "newsText" : content.type,
+          type: content.type,
           content: JSON.stringify(content.content),
           order: content.order,
         }

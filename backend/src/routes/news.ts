@@ -4,6 +4,7 @@ import { query } from "../middlewares/helper";
 import {
   createContents,
   createNews,
+  deleteNews,
   publishNews,
   unPublishNews,
   updateContents,
@@ -207,6 +208,24 @@ newsRouter.put("/update", async (req: any, res: any) => {
     await updateContents(contents, id);
 
     return res.status(201).json({ id });
+  } catch (error: any) {
+    if (res.status) {
+      res.status(500).json({ error: error.message });
+    } else {
+      throw new Error(error.message);
+    }
+  }
+});
+
+newsRouter.delete("/delete/:id", async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) return res.status(400).json({ error: "Invalid request" });
+
+    await deleteNews(id);
+
+    return res.status(200).json({ message: "News deleted successfully" });
   } catch (error: any) {
     if (res.status) {
       res.status(500).json({ error: error.message });

@@ -115,3 +115,19 @@ export const updateContents = async (contents: any, newsId: string) => {
     throw new Error(error);
   }
 };
+
+export const deleteNews = async (id: number) => {
+  try {
+    await query(`DELETE FROM news WHERE id = :id`, {
+      id,
+    });
+
+    await query(`DELETE FROM contents WHERE newsId = :id`, {
+      id,
+    });
+
+    return id;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};

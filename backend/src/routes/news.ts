@@ -6,6 +6,8 @@ import {
   createNews,
   publishNews,
   unPublishNews,
+  updateContents,
+  UpdateNews,
 } from "../models/news";
 
 const newsRouter = express.Router();
@@ -183,13 +185,15 @@ newsRouter.put("/update", async (req: any, res: any) => {
       !description ||
       !contents ||
       !redirectLink
-    )
+    ) {
       return res.status(400).json({ error: "Invalid request" });
+    }
 
     const category = req.body.category || "noCategory";
     const status = req.body.status || "Unpublished";
 
-    const newsId = await createNews({
+    await UpdateNews({
+      id,
       title,
       description,
       image,
@@ -200,12 +204,9 @@ newsRouter.put("/update", async (req: any, res: any) => {
       contents,
     });
 
-    if (!newsId)
-      return res.status(400).json({ error: "database insert error" });
+    await updateContents(contents, id);
 
-    await createContents(contents, newsId);
-
-    return res.status(201).json({ newsId });
+    return res.status(201).json({ id });
   } catch (error: any) {
     if (res.status) {
       res.status(500).json({ error: error.message });

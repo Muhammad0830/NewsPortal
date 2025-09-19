@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useEdgeStore } from "@/lib/edgestore";
 import { cn } from "@/lib/cn";
@@ -17,16 +17,32 @@ interface ImageUploaderProps {
   images: string[];
   onChange: (images: string[]) => void;
   multiple?: boolean;
+  submitted: boolean;
 }
 
 export default function ImageUploader({
   images,
   onChange,
   multiple = true,
+  submitted,
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const { edgestore } = useEdgeStore();
   const t = useTranslations("adminNews");
+
+  const confirmUpload = async (url: string) => {
+    await edgestore.PublicImages.confirmUpload({
+      url,
+    });
+  };
+
+  useEffect(() => {
+    if (submitted) {
+      for (const image of images) {
+        confirmUpload(image);
+      }
+    }
+  }, [submitted]); // eslint-disable-line
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;

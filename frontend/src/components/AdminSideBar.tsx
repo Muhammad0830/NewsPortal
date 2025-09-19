@@ -19,7 +19,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Separator } from "./ui/separator";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/cn";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/authContext";
@@ -33,11 +33,13 @@ import {
 
 export function AppSidebar() {
   const pathName = usePathname();
+  const router = useRouter();
   const { user, logout, success, error, setSuccess, setError } = useAuth();
 
   useEffect(() => {
     if (success === "logout") {
       toast("Successfull logged out", { description: "Come back anytime!" });
+      router.push('/auth?mode=signin');
     }
     setSuccess(null);
   }, [success]); // eslint-disable-line

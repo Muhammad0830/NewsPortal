@@ -177,6 +177,10 @@
         "Single News Page": "Single News Page",
         "Edit News": "Edit News",
         "Form Values": "Form Values",
-        "News deleted successfully": "News deleted successfully"
+        "News deleted successfully": "News deleted successfully",
+        "enterTitle": "Enter {lang} title",
+        "enterDescription": "Enter {lang} description",
+        "enterUrlName": "Enter {lang} url name",
+        "All News": "All News"
     }
 }

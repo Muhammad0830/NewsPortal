@@ -21,17 +21,14 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import React, { useCallback, useState } from "react";
-import { SecondaryContent, ContentAdder, RequestNews } from "@/types/types";
+import React, { useState } from "react";
+import { ContentAdder, RequestNews, SecContent } from "@/types/types";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { toast } from "sonner";
 import { useEdgeStore } from "@/lib/edgestore";
-import { SingleImageDropzone } from "@/components/upload/single-image";
-import {
-  UploaderProvider,
-  type UploadFn,
-} from "@/components/upload/uploader-provider";
-import { ImageUploader } from "@/components/upload/multi-image";
+import ImageUploader from "@/components/CustomUploader";
+import CustomMultiLangInput from "@/components/CustomMultiLangInput";
+import { usePathname } from "next/navigation";
 
 const contentAdders: ContentAdder[] = [
   {
@@ -61,9 +58,7 @@ type insertResponse = {
 };
 
 const Page = () => {
-  const [secondaryContent, setSecondaryContent] = useState<SecondaryContent[]>(
-    []
-  );
+  const [secContent, setSecContent] = useState<SecContent[]>([]);
   const [mainTitle, setMainTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [slug, setSlug] = useState<string>("");
@@ -76,14 +71,29 @@ const Page = () => {
     thumbnailUrl: string;
   }>();
   const [secondaryUrls, setSecondaryUrls] = useState<{ url: string }[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+  console.log("secContent", secContent);
+
+  const [titles, setTitles] = useState({
+    en: "",
+    ru: "",
+    uz: "",
+  });
+  const [descriptions, setDescriptions] = useState({
+    en: "",
+    ru: "",
+    uz: "",
+  });
 
   const t = useTranslations("adminNews");
   const router = useRouter();
+  const pathName = usePathname();
+  const locale = pathName.split("/")[1];
   const { edgestore } = useEdgeStore();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!mainTitle || !description || !mainUrls?.url || !slug) {
+    if (!titles || !descriptions || !mainUrls?.url || !slug) {
       toast(t("Action Denied"), {
         description: t("Fill all the necessary fields"),
       });
@@ -92,13 +102,13 @@ const Page = () => {
 
     mutateNews(
       {
-        title: mainTitle,
-        description: description,
+        title: titles,
+        description: descriptions,
         status: publishORSubmit === "publish" ? "Published" : "Unpublished",
         image: mainUrls?.url,
         redirectLink: link,
         slug: slug,
-        contents: secondaryContent,
+        contents: secContent,
       },
       {
         onSuccess: async () => {
@@ -107,7 +117,7 @@ const Page = () => {
           setDescription("");
           setSlug("");
           setLink("");
-          setSecondaryContent([]);
+          setSecContent([]);
 
           await edgestore.PublicImages.confirmUpload({
             url: mainUrls?.url ? mainUrls.url : "",
@@ -120,6 +130,7 @@ const Page = () => {
           });
           setMainUrls({ url: "", thumbnailUrl: "" });
           setSecondaryUrls([]);
+          setSubmitted(true);
           router.push("/admin/news");
         },
         onError: (error) => {
@@ -136,61 +147,8 @@ const Page = () => {
     "/news/create"
   );
 
-  const uploadFn: UploadFn = useCallback(
-    async ({ file, onProgressChange, signal }) => {
-      const res = await edgestore.PublicImages.upload({
-        file,
-        signal,
-        onProgressChange,
-        options: {
-          temporary: true,
-        },
-      });
-      // you can run some server action or api here
-      // to add the necessary data to your database
-      console.log(res);
-      setMainUrls({
-        url: res.url,
-        thumbnailUrl: res.thumbnailUrl ? res.thumbnailUrl : res.url,
-      });
-      return res;
-    },
-    [edgestore]
-  );
-
-  const uploadSecondaryFn: UploadFn = useCallback(
-    async ({ order, file, onProgressChange, signal }) => {
-      const res = await edgestore.PublicImages.upload({
-        file,
-        signal,
-        onProgressChange,
-        options: { temporary: true },
-      });
-      setSecondaryUrls((prev) => [
-        ...prev,
-        {
-          url: res.url,
-        },
-      ]);
-      if (order) {
-        setSecondaryContent((prev) =>
-          prev.map((item, index) =>
-            index === order - 1 && Array.isArray(item.content)
-              ? {
-                  ...item,
-                  content: item.content.concat(res.url),
-                }
-              : item
-          )
-        );
-      }
-      return res;
-    },
-    [edgestore]
-  );
-
   const moveItem = (order: number, direction: "up" | "down") => {
-    setSecondaryContent((prev) => {
+    setSecContent((prev) => {
       const index = order - 1;
       const newArray = [...prev];
 
@@ -265,44 +223,40 @@ const Page = () => {
 
           <div>
             <div>{t("image")}*</div>
-            <div className="relative h-24 inline-block">
-              <UploaderProvider uploadFn={uploadFn} autoUpload>
-                <SingleImageDropzone
-                  height={96}
-                  width={171}
-                  className="text-primary"
-                  dropzoneoptions={{
-                    maxSize: 1024 * 1024 * 5, // 1 MB
-                  }}
-                />
-              </UploaderProvider>
+            <div className="relative inline-block">
+              <ImageUploader
+                images={
+                  (mainUrls?.url as string) ? ([mainUrls?.url] as string[]) : []
+                }
+                onChange={(image) =>
+                  setMainUrls({
+                    url: image[0],
+                    thumbnailUrl: image[0],
+                  })
+                }
+                multiple={false}
+                submitted={submitted}
+              />
             </div>
           </div>
 
           <div className="flex sm:flex-row flex-col items-center gap-2">
             <div className="sm:w-1/2 w-full">
-              <div>{t("Title")}*</div>
-              <div className="w-full h-10">
-                <input
-                  type="text"
-                  className="w-full h-full py-1 px-2 rounded-sm bg-primary/20 border border-primary"
-                  placeholder={t("title for example")}
-                  value={mainTitle}
-                  onChange={(e) => setMainTitle(e.target.value)}
-                />
-              </div>
+              <div className="mb-1">Title*</div>
+
+              <CustomMultiLangInput
+                values={titles}
+                onChange={setTitles}
+                placeholderKey="enterTitle"
+              />
             </div>
             <div className="sm:w-1/2 w-full">
-              <div>{t("Description")}*</div>
-              <div className="w-full h-10">
-                <input
-                  type="text"
-                  className="w-full h-full py-1 px-2 rounded-sm bg-primary/20 border border-primary"
-                  placeholder={t("description for example")}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
+              <div className="mb-1">{t("Description")}*</div>
+              <CustomMultiLangInput
+                values={descriptions}
+                onChange={setDescriptions}
+                placeholderKey="enterDescription"
+              />
             </div>
           </div>
         </div>
@@ -323,17 +277,20 @@ const Page = () => {
                     type="button"
                     key={index}
                     onClick={() => {
-                      setSecondaryContent((prev) => [
+                      setSecContent((prev) => [
                         ...prev,
                         {
                           type: content.type,
                           order: prev.length + 1,
                           content:
                             content.type === "link"
-                              ? ({} as { label: string; url: string })
+                              ? ({} as {
+                                  label: { en: string; ru: string; uz: string };
+                                  url: string;
+                                })
                               : content.type === "image"
                               ? ([] as string[])
-                              : "",
+                              : { en: "", ru: "", uz: "" },
                         },
                       ]);
                     }}
@@ -350,12 +307,12 @@ const Page = () => {
           </div>
 
           <div className="w-full min-h-[100px] p-1 rounded-sm border-2 border-dashed border-primary relative flex flex-col gap-2">
-            {secondaryContent.length === 0 ? (
+            {secContent.length === 0 ? (
               <div className="absolute inset-0 flex justify-center items-center text-lg font-semibold">
                 {t("No secondary content added")}
               </div>
             ) : (
-              secondaryContent.map((content, index) => {
+              secContent.map((content, index) => {
                 return (
                   <div
                     key={index}
@@ -384,10 +341,10 @@ const Page = () => {
                         </button>
                         <button
                           type="button"
-                          disabled={content.order === secondaryContent.length}
+                          disabled={content.order === secContent.length}
                           className={cn(
                             "p-1 rounded-sm border cursor-pointer bg-primary/40 dark:bg-primary/20 border-primary",
-                            content.order === secondaryContent.length
+                            content.order === secContent.length
                               ? "opacity-50 cursor-default"
                               : "hover:bg-primary/50 dark:hover:bg-primary/10"
                           )}
@@ -398,7 +355,7 @@ const Page = () => {
                         <button
                           type="button"
                           onClick={() => {
-                            setSecondaryContent((prev) =>
+                            setSecContent((prev) =>
                               prev
                                 .filter((item) => item.order !== content.order)
                                 .map((item, index) => ({
@@ -414,118 +371,119 @@ const Page = () => {
                       </div>
                     </div>
                     {content.type === "title" || content.type === "text" ? (
-                      <div className="w-full bg-primary/20 border border-primary rounded-sm">
-                        <textarea
-                          className="w-full min-h-[80px] flex items-start justify-start text-start  p-2"
-                          placeholder={t(`Block: ${content.type}`)}
-                          value={content.content as string}
-                          onChange={(e) => {
-                            setSecondaryContent((prev) =>
-                              prev.map((item, index) =>
+                      <div className="">
+                        <CustomMultiLangInput
+                          values={
+                            secContent.filter(
+                              (item) => item.order === content.order
+                            )[0].content as {
+                              en: string;
+                              ru: string;
+                              uz: string;
+                            }
+                          }
+                          onChange={(values) =>
+                            setSecContent((prev) =>
+                              prev.map((Item, index) =>
                                 index === content.order - 1
                                   ? {
-                                      ...item,
-                                      content: e.target.value,
+                                      ...Item,
+                                      content: values,
                                     }
-                                  : item
+                                  : Item
                               )
-                            );
-                          }}
+                            )
+                          }
+                          placeholderKey="enterDescription"
+                          isTextArea
+                          className="w-full bg-primary/20 border border-primary rounded-sm"
                         />
                       </div>
                     ) : content.type === "link" ? (
                       <div className="flex sm:flex-row flex-col gap-2">
-                        <div className="sm:w-1/2 w-full bg-primary/20 border border-primary rounded-sm">
-                          <input
-                            type="text"
-                            className="w-full min-h-[40px] p-2"
-                            placeholder={t(`Link url`)}
-                            // value={label}
-                            onChange={(e) => {
-                              setSecondaryContent((prev) =>
-                                prev.map((item, index) =>
-                                  index === content.order - 1 &&
-                                  typeof item.content === "object"
-                                    ? {
-                                        ...item,
-                                        content: {
-                                          ...item.content,
-                                          label: e.target.value,
-                                        },
-                                      }
-                                    : item
-                                )
-                              );
-                            }}
-                          />
-                        </div>
-                        <div className="sm:w-1/2 w-full bg-primary/20 border border-primary rounded-sm">
-                          <input
-                            type="text"
-                            className="w-full min-h-[40px] p-2"
-                            placeholder={t(`Link name`)}
-                            // value={url}
-                            onChange={(e) => {
-                              setSecondaryContent((prev) =>
-                                prev.map((item, index) =>
-                                  index === content.order - 1 &&
-                                  typeof item.content === "object"
-                                    ? {
-                                        ...item,
-                                        content: {
-                                          ...item.content,
-                                          url: e.target.value,
-                                        },
-                                      }
-                                    : item
-                                )
-                              );
-                            }}
-                          />
+                        <CustomMultiLangInput
+                          values={
+                            typeof content.content === "object" &&
+                            "label" in content.content
+                              ? (content.content.label as {
+                                  en: string;
+                                  ru: string;
+                                  uz: string;
+                                })
+                              : { en: "", ru: "", uz: "" }
+                          }
+                          onChange={(values) =>
+                            setSecContent((prev) =>
+                              prev.map((item, index) =>
+                                index === content.order - 1
+                                  ? {
+                                      ...item,
+                                      content: {
+                                        ...item.content,
+                                        label: values,
+                                      },
+                                    }
+                                  : item
+                              )
+                            )
+                          }
+                          placeholderKey="enterUrlName"
+                          wrapperClassName="sm:w-1/2 w-full"
+                        />
+                        <div className="sm:w-1/2 w-full flex items-end">
+                          <div className="w-full bg-primary/20 border border-primary rounded-sm">
+                            <input
+                              type="text"
+                              className="w-full min-h-[40px] p-2"
+                              placeholder={t(`Link name`)}
+                              // value={url}
+                              onChange={(e) => {
+                                setSecContent((prev) =>
+                                  prev.map((item, index) =>
+                                    index === content.order - 1 &&
+                                    typeof item.content === "object"
+                                      ? {
+                                          ...item,
+                                          content: {
+                                            ...item.content,
+                                            url: e.target.value,
+                                          },
+                                        }
+                                      : item
+                                  )
+                                );
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
                     ) : content.type === "image" ? (
                       <div className="min-h-[80px] w-full relative cursor-pointer">
-                        <UploaderProvider
-                          uploadFn={(e) =>
-                            uploadSecondaryFn({
-                              file: e.file,
-                              onProgressChange: e.onProgressChange,
-                              signal: e.signal,
-                              order: content.order,
-                            })
+                        <ImageUploader
+                          images={
+                            secContent
+                              .filter(
+                                (item) =>
+                                  item.type === "image" &&
+                                  item.order === content.order
+                              )
+                              .map((content) => content.content as string[])[0]
                           }
-                          autoUpload
-                        >
-                          <ImageUploader
-                            maxFiles={10}
-                            maxSize={1024 * 1024 * 5} // 5 MB
-                          />
-                        </UploaderProvider>
-                        {/* <div className="absolute cursor-pointer inset-0 dark:bg-black bg-white border border-primary rounded-sm flex items-center justify-start  z-0 px-2 py-1">
-                          <div className="absolute inset-0 bg-primary/20 dark:bg-primary/30 rounded-sm"></div>
-                          {t("select an image")}
-                        </div>
-                        <input
-                          type="file"
-                          className="opacity-0 w-full z-10 h-full relative cursor-pointer"
-                          value={content.content as string}
-                          onChange={(e) => {
-                            setSecondaryContent((prev) =>
+                          onChange={(images) =>
+                            setSecContent((prev) =>
                               prev.map((item, index) =>
                                 index === content.order - 1 &&
                                 Array.isArray(item.content)
                                   ? {
                                       ...item,
-                                      content: item.content.concat(
-                                        e.target.value
-                                      ),
+                                      content: images,
                                     }
                                   : item
                               )
-                            );
-                          }}
-                        /> */}
+                            )
+                          }
+                          submitted={submitted}
+                        />
                       </div>
                     ) : (
                       <div className="h-[40px] w-full flex justify-center items-center">
@@ -562,11 +520,7 @@ const Page = () => {
                   className="rounded-sm cursor-pointer"
                   onClick={() => setPublishORSubmit("publish")}
                   disabled={
-                    !mainTitle ||
-                    !description ||
-                    !mainUrls?.url ||
-                    !link ||
-                    !slug
+                    !titles || !descriptions || !mainUrls?.url || !link || !slug
                   }
                 >
                   {t("Publish")}
@@ -578,11 +532,7 @@ const Page = () => {
                   className="rounded-sm cursor-pointer"
                   onClick={() => setPublishORSubmit("submit")}
                   disabled={
-                    !mainTitle ||
-                    !description ||
-                    !mainUrls?.url ||
-                    !link ||
-                    !slug
+                    !titles || !descriptions || !mainUrls?.url || !link || !slug
                   }
                 >
                   {t("Submit")}
@@ -604,7 +554,11 @@ const Page = () => {
                         <div>
                           <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
                             <span className="font-semibold">{t("Title")}</span>:{" "}
-                            {mainTitle}
+                            {locale === "ru"
+                              ? titles.ru
+                              : locale === "uz"
+                              ? titles.uz
+                              : titles.en}
                           </span>
                         </div>
                         <div>
@@ -612,7 +566,12 @@ const Page = () => {
                             <span className="font-semibold">
                               {t("Description")}
                             </span>
-                            : {description}
+                            :{" "}
+                            {locale === "ru"
+                              ? descriptions.ru
+                              : locale === "uz"
+                              ? descriptions.uz
+                              : descriptions.en}
                           </span>
                         </div>
                         <div className="flex sm:flex-row flex-col gap-2 sm:items-center">

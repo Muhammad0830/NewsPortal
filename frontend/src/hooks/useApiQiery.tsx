@@ -11,6 +11,7 @@ const useApiQuery = <T,>(url: string, key: string | (string | number)[]) => {
 
       return response.data;
     },
+    retry: 2,
   });
 
   return { data, error, isLoading, isError, refetch };

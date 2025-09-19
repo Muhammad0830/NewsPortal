@@ -1,15 +1,14 @@
 export interface News {
   id: number;
-  title: string;
-  description: string;
+  title: { en: string; ru: string; uz: string };
+  description: { en: string; ru: string; uz: string };
   url: string;
   image: string;
   category: string;
   created_at: string;
-  newsText: string;
   status?: "Published" | "Unpublished";
   slug: string;
-  contents: SecondaryContent[];
+  contents: SecContent[];
   redirectLink?: string;
 }
 
@@ -42,10 +41,11 @@ export type ContentItem =
     };
 
 export interface NewsData {
-  mainTitle: string;
-  mainNewsText: string;
+  mainTitle: { en: string; ru: string; uz: string };
+  description: { en: string; ru: string; uz: string };
+  slug: string;
   mainImage: string;
-  contents: ContentItem[];
+  contents: SecContent[];
   link: string;
 }
 
@@ -59,9 +59,25 @@ export type User = {
   };
 };
 
-export interface SecondaryContent {
-  type: "title" | "text" | "newsText" | "image" | "link";
-  content: string | string[] | { label: string; url: string };
+export type SecContentItem =
+  | string[]
+  | {
+      en: string;
+      ru: string;
+      uz: string;
+    }
+  | {
+      label: {
+        en: string;
+        ru: string;
+        uz: string;
+      };
+      url: string;
+    };
+
+export interface SecContent {
+  type: "title" | "text" | "image" | "link";
+  content: SecContentItem;
   order: number;
 }
 
@@ -73,13 +89,13 @@ export interface ContentAdder {
 
 export interface RequestNews {
   id?: number;
-  title: string;
-  description: string;
+  title: { en: string; ru: string; uz: string };
+  description: { en: string; ru: string; uz: string };
   image: string;
   category?: string;
   status?: "Published" | "Unpublished";
   slug: string;
-  contents: SecondaryContent[];
+  contents: SecContent[];
   redirectLink?: string;
 }
 
@@ -95,6 +111,6 @@ export interface NewsResponse {
   newsText: string;
   status?: "Published" | "Unpublished";
   slug: string;
-  contents: SecondaryContent[];
+  contents: SecContent[];
   redirectLink?: string;
 }

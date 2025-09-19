@@ -7,6 +7,7 @@ import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { News, Category } from "@/types/types";
 import { cn } from "@/lib/cn";
+import { usePathname } from "next/navigation";
 
 const CARD_WIDTH = 30;
 const GAP = 2;
@@ -18,6 +19,9 @@ const Page = () => {
   const [width, setWidth] = useState(0);
   const [images, setImages] = useState<News[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+
+  const pathName = usePathname();
+  const locale = pathName.split("/")[1];
 
   const speed = 1.5;
 
@@ -149,7 +153,11 @@ const Page = () => {
                 />
                 <div className="absolute z-20 bottom-0 left-0 right-0 text-white p-2">
                   <span className="lg:text-xl md:text-lg sm:text-[16px] text-sm font-semibold line-clamp-2">
-                    {img.title}
+                    {locale === "ru"
+                      ? img.title.ru
+                      : locale === "uz"
+                      ? img.title.uz
+                      : img.title.en}
                   </span>
                 </div>
                 <div

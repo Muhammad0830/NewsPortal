@@ -5,8 +5,9 @@ import { NewsData } from "@/types/types";
 import { ArrowLeft, Link as LinkIcon, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const Page = () => {
   const params = useParams();
@@ -14,15 +15,27 @@ const Page = () => {
   const t = useTranslations("adminNews");
   const [news, setNews] = useState<NewsData | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1];
 
-  const { data: newsData, isLoading } = useApiQuery<NewsData>(
-    `/news/each/${id}`,
-    ["EachNews"]
-  );
+  const {
+    data: newsData,
+    isLoading,
+    isError,
+    error,
+  } = useApiQuery<NewsData>(`/news/each/${id}`, ["EachNews"]);
 
   useEffect(() => {
     if (newsData) setNews(newsData);
   }, [newsData]);
+
+  useEffect(() => {
+    if (isError) {
+      toast(t("Action Failed"), {
+        description: `${error?.message}`,
+      });
+    }
+  });
 
   if (isLoading) return <div className="pt-20">Loading...</div>;
 
@@ -65,38 +78,75 @@ const Page = () => {
             className="object-cover"
           />
         </div>
-        <div className="sm:text-2xl text-xl font-bold">{news.mainTitle}</div>
+        <div className="sm:text-2xl text-xl font-bold">
+          {locale === "ru"
+            ? news.mainTitle.ru
+            : locale === "uz"
+            ? news.mainTitle.uz
+            : news.mainTitle.en}
+        </div>
         <div className="flex flex-col gap-2">
           {news.contents.map((c, index) => {
             switch (c.type) {
               case "title":
+                const titleContent = c.content as {
+                  en: string;
+                  ru: string;
+                  uz: string;
+                };
                 return (
                   <div className="sm:text-xl text-lg font-semibold" key={index}>
-                    {c.content}
+                    {locale === "ru"
+                      ? titleContent.ru
+                      : locale === "uz"
+                      ? titleContent.uz
+                      : titleContent.en}
                   </div>
                 );
-              case "newsText":
+              case "text":
+                const textContent = c.content as {
+                  en: string;
+                  ru: string;
+                  uz: string;
+                };
                 return (
                   <div className="sm:text-[16px] text-sm" key={index}>
-                    {c.content}
+                    {locale === "ru"
+                      ? textContent.ru
+                      : locale === "uz"
+                      ? textContent.uz
+                      : textContent.en}
                   </div>
                 );
               case "link":
+                const linkContent = c.content as {
+                  label: {
+                    en: string;
+                    ru: string;
+                    uz: string;
+                  };
+                  url: string;
+                };
                 return (
                   <Link
-                    href={c.content.url}
+                    href={linkContent.url}
                     className="text-primary flex gap-1 items-center"
                     key={index}
                   >
                     <LinkIcon className="sm:w-4 w-3.5 aspect-square" />
                     <span className="sm:text-[16px] text-sm">
-                      {c.content.label}
+                      {locale === "ru"
+                        ? linkContent.label.ru
+                        : locale === "uz"
+                        ? linkContent.label.uz
+                        : linkContent.label.en}
                     </span>
                   </Link>
                 );
               case "image":
+                const imageContent = c.content as string[];
                 if (c.content) {
-                  if (c.content.length === 1) {
+                  if (imageContent.length === 1) {
                     return (
                       <div
                         className="md:min-w-[250px] min-w-[200px] sm:w-[50vw] w-[70vw] mx-auto max-w-[500px] relative aspect-video overflow-hidden rounded-md"
@@ -104,18 +154,17 @@ const Page = () => {
                       >
                         <Image
                           className="object-cover"
-                          src={c.content[0]}
-                          // src="/images/news1.jpg"
+                          src={imageContent[0]}
                           alt={`news${c.order}`}
                           fill
                         />
                       </div>
                     );
-                  } else if (c.content.length > 1 && Array.isArray(c.content)) {
+                  } else if (imageContent.length > 1) {
                     return (
                       <div className="flex flex-col items-center" key={index}>
                         <div className="lg:max-w-[1200px] w-full sm:grid grid-cols-2 flex flex-col md:gap-4 ld:gap-6 gap-2">
-                          {c.content.map((img, indexImage) => (
+                          {imageContent.map((img, indexImage) => (
                             <div
                               className="sm:w-auto w-[70vw] max-sm:mx-auto relative aspect-video overflow-hidden rounded-md"
                               key={indexImage}

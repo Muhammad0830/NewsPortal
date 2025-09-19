@@ -34,9 +34,10 @@ newsRouter.get("/", async (req: any, res: any) => {
 newsRouter.get("/each/:id", async (req: any, res: any) => {
   try {
     const newsId = req.params.id;
+    console.log("id1", newsId);
 
     const rows = await query<any[]>(
-      `SELECT n.id, n.title, n.newsText, n.image, n.created_at, n.category, n.description, n.status, n.slug, n.redirectLink,
+      `SELECT n.id, n.title, n.image, n.created_at, n.category, n.description, n.status, n.slug, n.redirectLink,
               c.type, c.content, c.\`order\`
        FROM news n
        JOIN contents c ON n.id = c.newsId
@@ -50,6 +51,8 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
     }
 
     const base = rows[0];
+
+    console.log("id2", newsId);
 
     const contents = rows.map((row) => ({
       type: row.type,
@@ -65,7 +68,6 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
     const result = {
       id: base.id,
       mainTitle: base.title,
-      mainNewsText: base.newsText,
       mainImage: base.image,
       description: base.description,
       category: base.category,
@@ -75,6 +77,7 @@ newsRouter.get("/each/:id", async (req: any, res: any) => {
       slug: base.slug,
       status: base.status,
     };
+    console.log("id3", newsId);
 
     res.status(200).json(result);
   } catch (err: any) {

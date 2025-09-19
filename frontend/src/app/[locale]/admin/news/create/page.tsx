@@ -94,7 +94,7 @@ const Page = () => {
       {
         title: mainTitle,
         description: description,
-        status: publishORSubmit === "publish" ? "published" : "unpublished",
+        status: publishORSubmit === "publish" ? "Published" : "Unpublished",
         image: mainUrls?.url,
         redirectLink: link,
         slug: slug,

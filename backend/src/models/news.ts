@@ -3,16 +3,8 @@ import { query } from "../middlewares/helper";
 
 export const createNews = async (news: any) => {
   try {
-    const {
-      title,
-      description,
-      image,
-      category,
-      status,
-      redirectLink,
-      slug,
-      contents,
-    } = news;
+    const { title, description, image, category, status, redirectLink, slug } =
+      news;
 
     const newsId = await query(
       `INSERT INTO news (title, description, image, category, status, redirectLink, slug) 
@@ -75,6 +67,50 @@ export const unPublishNews = async (id: number) => {
     ]);
 
     return id;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+export const UpdateNews = async (news: any) => {
+  try {
+    const {
+      id,
+      title,
+      description,
+      image,
+      category,
+      status,
+      redirectLink,
+      slug,
+    } = news;
+
+    await query(
+      `UPDATE news SET title = :title, description = :description, image = :image, category = :category, status = :status, redirectLink = :redirectLink, slug = :slug 
+      WHERE id = :id`,
+      {
+        id: id,
+        title: title,
+        description: description,
+        image: image,
+        category: category,
+        status: status,
+        redirectLink: redirectLink,
+        slug: slug,
+      }
+    );
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
+
+export const updateContents = async (contents: any, newsId: string) => {
+  try {
+    await query(`DELETE FROM contents WHERE newsId = :newsId`, {
+      newsId,
+    });
+
+    await createContents(contents, newsId);
   } catch (error: any) {
     throw new Error(error);
   }

@@ -83,6 +83,7 @@ const Page = () => {
   const [responseStatus, setResponseStatus] = useState<
     "Published" | "Unpublished"
   >("Published");
+  const [submitted, setSubmitted] = useState(false);
 
   const t = useTranslations("adminNews");
   const router = useRouter();
@@ -102,7 +103,7 @@ const Page = () => {
         id: Number(id),
         title: mainTitle,
         description: description,
-        status: publishORSubmit === "publish" ? "published" : "unpublished",
+        status: publishORSubmit === "publish" ? "Published" : "Unpublished",
         image: mainUrls?.url,
         redirectLink: link,
         slug: slug,
@@ -111,21 +112,24 @@ const Page = () => {
       {
         onSuccess: async () => {
           toast(t("News created successfully"));
-          setMainTitle("");
           setDescription("");
           setSlug("");
           setLink("");
-          setSecondaryContent([]);
-
-          await edgestore.PublicImages.confirmUpload({
-            url: mainUrls?.url ? mainUrls.url : "",
-          });
+          setSubmitted(true);
 
           secondaryUrls.forEach(async (url) => {
             await edgestore.PublicImages.confirmUpload({
               url: url.url,
             });
           });
+
+          await edgestore.PublicImages.confirmUpload({
+            url: mainUrls?.url ? mainUrls.url : "",
+          });
+
+          setMainTitle("");
+          setSecondaryContent([]);
+
           setMainUrls({ url: "", thumbnailUrl: "" });
           setSecondaryUrls([]);
           router.push("/admin/news");
@@ -260,6 +264,7 @@ const Page = () => {
                   })
                 }
                 multiple={false}
+                submitted={submitted}
               />
             </div>
           </div>
@@ -503,6 +508,7 @@ const Page = () => {
                               )
                             )
                           }
+                          submitted={submitted}
                         />
                       </div>
                     ) : (

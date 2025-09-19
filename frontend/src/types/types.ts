@@ -77,7 +77,7 @@ export interface RequestNews {
   description: string;
   image: string;
   category?: string;
-  status?: "published" | "unpublished";
+  status?: "Published" | "Unpublished";
   slug: string;
   contents: SecondaryContent[];
   redirectLink?: string;

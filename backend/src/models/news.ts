@@ -42,6 +42,7 @@ export const createContents = async (contents: any, newsId: string) => {
           order: content.order,
         }
       );
+
     }
   } catch (error: any) {
     throw new Error(error);

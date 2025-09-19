@@ -59,8 +59,6 @@ type insertResponse = {
 
 const Page = () => {
   const [secContent, setSecContent] = useState<SecContent[]>([]);
-  const [mainTitle, setMainTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
   const [slug, setSlug] = useState<string>("");
   const [link, setLink] = useState<string>("");
   const [publishORSubmit, setPublishORSubmit] = useState<"publish" | "submit">(
@@ -113,8 +111,16 @@ const Page = () => {
       {
         onSuccess: async () => {
           toast(t("News created successfully"));
-          setMainTitle("");
-          setDescription("");
+          setTitles({
+            en: "",
+            ru: "",
+            uz: "",
+          });
+          setDescriptions({
+            en: "",
+            ru: "",
+            uz: "",
+          });
           setSlug("");
           setLink("");
           setSecContent([]);
@@ -207,7 +213,10 @@ const Page = () => {
             </div>
             <div className="sm:w-1/2 w-full">
               <div>
-                {t("redirectURL")} {t("optional")}
+                {t("redirectURL")}{" "}
+                <span className={locale === "ru" ? "hidden lg:inline" : ""}>
+                  {t("optional")}
+                </span>
               </div>
               <div className="w-full h-10">
                 <input
@@ -268,7 +277,12 @@ const Page = () => {
               <span className="lg:block hidden">{t("secondary content")}</span>
             </div>
             <div className="flex items-center gap-2 justify-end">
-              <div className="py-1 sm:block hidden">
+              <div
+                className={cn(
+                  "py-1 sm:block hidden",
+                  locale === "uz" ? "md:hidden lg:block" : ""
+                )}
+              >
                 <Plus className="w-5 h-5" />
               </div>
               {contentAdders.map((content, index) => {
@@ -297,7 +311,15 @@ const Page = () => {
                     className="flex gap-1 items-center border px-2 py-1 rounded-sm cursor-pointer bg-primary/40 hover:bg-primary/50 dark:bg-primary/20 border-primary dark:hover:bg-primary/10"
                   >
                     {content.icon}
-                    <span className="sm:text-[16px] text-sm">
+                    <span
+                      className={cn(
+                        "lg:text-[16px] text-sm",
+                        (content.type === "image" || content.type === "link") &&
+                          locale === "ru"
+                          ? "lg:w-auto lg:opacity-100 w-0 opacity-0"
+                          : ""
+                      )}
+                    >
                       {t(`${content.label}`)}
                     </span>
                   </button>
@@ -308,7 +330,7 @@ const Page = () => {
 
           <div className="w-full min-h-[100px] p-1 rounded-sm border-2 border-dashed border-primary relative flex flex-col gap-2">
             {secContent.length === 0 ? (
-              <div className="absolute inset-0 flex justify-center items-center text-lg font-semibold">
+              <div className="absolute inset-0 flex justify-center items-center text-lg font-semibold text-center">
                 {t("No secondary content added")}
               </div>
             ) : (
@@ -486,7 +508,7 @@ const Page = () => {
                         />
                       </div>
                     ) : (
-                      <div className="h-[40px] w-full flex justify-center items-center">
+                      <div className="h-[40px] w-full flex justify-center items-center text-center">
                         {t("Not supported type of content")}
                       </div>
                     )}
@@ -497,7 +519,7 @@ const Page = () => {
           </div>
         </div>
 
-        <div className="w-full flex sm:flex-row flex-col justify-between gap-2">
+        <div className="w-full flex sm:flex-row flex-col items-start justify-between gap-2">
           <div className="flex flex-col text-sm font-semibold text-black/70 dark:text-white/50 sm:order-1 order-2 sm:text-start text-center">
             <span>
               <span className="text-black dark:text-white">

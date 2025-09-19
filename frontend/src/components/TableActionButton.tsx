@@ -15,13 +15,35 @@ import { useRouter } from "@/i18n/navigation";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { toast } from "sonner";
 
-const TableActionButton = ({ payment }: { payment: News }) => {
+const TableActionButton = ({
+  payment,
+  refetch,
+}: {
+  payment: News;
+  refetch: () => void;
+}) => {
   const t = useTranslations("adminNews");
   const router = useRouter();
 
   const handleDelete = async (id: number) => {
-    console.log("delete", id);
+    deleteNews(id, {
+      onSuccess: () => {
+        toast(t("News deleted successfully"));
+        refetch();
+      },
+      onError: (error) => {
+        toast(t("Action Failed"), {
+          description: t("Internal Server Error"),
+        });
+        console.error(error);
+      },
+    });
   };
+
+  const { mutate: deleteNews } = useApiMutation(
+    (id) => `/news/delete/${id}`,
+    "delete"
+  );
 
   const handlePublish = async (id: number) => {
     publish(
@@ -29,6 +51,7 @@ const TableActionButton = ({ payment }: { payment: News }) => {
       {
         onSuccess: () => {
           toast(t("News published successfully"));
+          refetch();
         },
         onError: (error) => {
           toast(t("Action Failed"), {
@@ -46,6 +69,7 @@ const TableActionButton = ({ payment }: { payment: News }) => {
       {
         onSuccess: () => {
           toast(t("News unpublished successfully"));
+          refetch();
         },
         onError: (error) => {
           toast(t("Action Failed"), {
@@ -63,7 +87,7 @@ const TableActionButton = ({ payment }: { payment: News }) => {
   );
 
   const { mutate: unpublish } = useApiMutation<{ id: number }, { id: number }>(
-    "/news/publish",
+    "/news/unpublish",
     "put"
   );
 

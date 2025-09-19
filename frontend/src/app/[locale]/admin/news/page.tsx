@@ -13,7 +13,7 @@ const Page = () => {
   const t = useTranslations("adminNews");
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [data, setData] = useState<News[]>([]);
-  const { data: newsData, isLoading } = useApiQuery<News[]>("/news", ["news"]);
+  const { data: newsData, isLoading, refetch } = useApiQuery<News[]>("/news", ["news"]);
   const router = useRouter();
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const Page = () => {
       </div>
 
       <div className="relative z-0">
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns(refetch)} data={data} />
       </div>
     </div>
   );

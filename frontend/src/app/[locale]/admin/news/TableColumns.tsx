@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import TableActionButton from "@/components/TableActionButton";
 import { News } from "@/types/types";
 
-export const columns: ColumnDef<News>[] = [
+export const columns = (refetch: () => void): ColumnDef<News>[] => [
   {
     accessorKey: "title",
     header: "Title",
@@ -45,7 +45,7 @@ export const columns: ColumnDef<News>[] = [
     cell: ({ row }) => {
       const payment = row.original;
 
-      return <TableActionButton payment={payment} />;
+      return <TableActionButton payment={payment} refetch={refetch} />;
     },
   },
 ];

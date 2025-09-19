@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 const BaseURL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
 const useApiQuery = <T,>(url: string, key: string | (string | number)[]) => {
-  const { data, error, isLoading, isError } = useQuery<T>({
+  const { data, error, isLoading, isError, refetch } = useQuery<T>({
     queryKey: Array.isArray(key) ? key : [key],
     queryFn: async () => {
       const response = await api.get(`${BaseURL}${url}`);
@@ -13,7 +13,7 @@ const useApiQuery = <T,>(url: string, key: string | (string | number)[]) => {
     },
   });
 
-  return { data, error, isLoading, isError };
+  return { data, error, isLoading, isError, refetch };
 };
 
 export default useApiQuery;

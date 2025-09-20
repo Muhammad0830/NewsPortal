@@ -173,8 +173,16 @@ newsRouter.put("/unpublish", async (req: any, res: any) => {
 
 newsRouter.put("/update", async (req: any, res: any) => {
   try {
-    const { id, title, description, image, redirectLink, slug, contents } =
-      req.body;
+    const {
+      id,
+      title,
+      description,
+      image,
+      redirectLink,
+      slug,
+      contents,
+      status,
+    } = req.body;
 
     if (
       !id ||
@@ -189,7 +197,6 @@ newsRouter.put("/update", async (req: any, res: any) => {
     }
 
     const category = req.body.category || "noCategory";
-    const status = req.body.status || "Unpublished";
 
     await UpdateNews({
       id,

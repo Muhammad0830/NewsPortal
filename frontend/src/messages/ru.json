@@ -181,6 +181,7 @@
         "enterTitle": "Введите {lang} заголовок",
         "enterDescription": "Введите {lang} описание",
         "enterUrlName": "Введите {lang} название ссылки",
-        "All News": "Все новости"
+        "All News": "Все новости",
+        "News edited successfully": "Новость успешно отредактирована"
     }
 }

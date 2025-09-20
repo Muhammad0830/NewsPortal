@@ -42,7 +42,6 @@ export const createContents = async (contents: any, newsId: string) => {
           order: content.order,
         }
       );
-
     }
   } catch (error: any) {
     throw new Error(error);
@@ -91,8 +90,8 @@ export const UpdateNews = async (news: any) => {
       WHERE id = :id`,
       {
         id: id,
-        title: title,
-        description: description,
+        title: JSON.stringify(title),
+        description: JSON.stringify(description),
         image: image,
         category: category,
         status: status,

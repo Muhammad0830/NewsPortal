@@ -23,10 +23,10 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import {
-  SecondaryContent,
   ContentAdder,
   RequestNews,
   NewsResponse,
+  SecContent,
 } from "@/types/types";
 import { useApiMutation } from "@/hooks/useApiMutation";
 import { toast } from "sonner";
@@ -34,6 +34,7 @@ import { useEdgeStore } from "@/lib/edgestore";
 import { useParams } from "next/navigation";
 import useApiQuery from "@/hooks/useApiQiery";
 import ImageUploader from "@/components/CustomUploader";
+import CustomMultiLangInput from "@/components/CustomMultiLangInput";
 
 const contentAdders: ContentAdder[] = [
   {
@@ -65,9 +66,7 @@ type insertResponse = {
 const Page = () => {
   const params = useParams();
   const id = params?.id;
-  const [secondaryContent, setSecondaryContent] = useState<SecondaryContent[]>(
-    []
-  );
+  const [secondaryContent, setSecondaryContent] = useState<SecContent[]>([]);
   const [mainTitle, setMainTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [slug, setSlug] = useState<string>("");
@@ -80,9 +79,17 @@ const Page = () => {
     thumbnailUrl: string;
   }>();
   const [secondaryUrls, setSecondaryUrls] = useState<{ url: string }[]>([]);
-  const [responseStatus, setResponseStatus] = useState<
-    "Published" | "Unpublished"
-  >("Published");
+  const [titles, setTitles] = useState({
+    en: "",
+    ru: "",
+    uz: "",
+  });
+  const [descriptions, setDescriptions] = useState({
+    en: "",
+    ru: "",
+    uz: "",
+  });
+
   const [submitted, setSubmitted] = useState(false);
 
   const t = useTranslations("adminNews");
@@ -101,8 +108,8 @@ const Page = () => {
     mutateNews(
       {
         id: Number(id),
-        title: mainTitle,
-        description: description,
+        title: titles,
+        description: descriptions,
         status: publishORSubmit === "publish" ? "Published" : "Unpublished",
         image: mainUrls?.url,
         redirectLink: link,
@@ -111,7 +118,7 @@ const Page = () => {
       },
       {
         onSuccess: async () => {
-          toast(t("News created successfully"));
+          toast(t("News edited successfully"));
           setDescription("");
           setSlug("");
           setLink("");
@@ -159,12 +166,7 @@ const Page = () => {
         url: newsData.mainImage,
         thumbnailUrl: newsData.mainImage,
       });
-      if (newsData.status) setResponseStatus(newsData.status);
-      setSecondaryContent(
-        newsData.contents.map((content) =>
-          content.type === "newsText" ? { ...content, type: "text" } : content
-        )
-      );
+      setSecondaryContent(newsData.contents);
     }
   }, [newsData]);
 
@@ -271,28 +273,20 @@ const Page = () => {
 
           <div className="flex sm:flex-row flex-col items-center gap-2">
             <div className="sm:w-1/2 w-full">
-              <div>{t("Title")}*</div>
-              <div className="w-full h-10">
-                <input
-                  type="text"
-                  className="w-full h-full py-1 px-2 rounded-sm bg-primary/20 border border-primary"
-                  placeholder={t("title for example")}
-                  value={mainTitle}
-                  onChange={(e) => setMainTitle(e.target.value)}
-                />
-              </div>
+              <div className="mb-1">{t("Title")}*</div>
+              <CustomMultiLangInput
+                values={titles}
+                onChange={setTitles}
+                placeholderKey="enterTitle"
+              />
             </div>
             <div className="sm:w-1/2 w-full">
-              <div>{t("Description")}*</div>
-              <div className="w-full h-10">
-                <input
-                  type="text"
-                  className="w-full h-full py-1 px-2 rounded-sm bg-primary/20 border border-primary"
-                  placeholder={t("description for example")}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
+              <div className="mb-1">{t("Description")}*</div>
+              <CustomMultiLangInput
+                values={descriptions}
+                onChange={setDescriptions}
+                placeholderKey="enterDescription"
+              />
             </div>
           </div>
         </div>
@@ -320,10 +314,13 @@ const Page = () => {
                           order: prev.length + 1,
                           content:
                             content.type === "link"
-                              ? ({} as { label: string; url: string })
+                              ? ({} as {
+                                  label: { en: string; ru: string; uz: string };
+                                  url: string;
+                                })
                               : content.type === "image"
                               ? ([] as string[])
-                              : "",
+                              : { en: "", ru: "", uz: "" },
                         },
                       ]);
                     }}
@@ -346,15 +343,6 @@ const Page = () => {
               </div>
             ) : (
               secondaryContent.map((content, index) => {
-                const label =
-                  typeof content.content == "object" &&
-                  "label" in content.content
-                    ? content.content.label
-                    : "";
-                const url =
-                  typeof content.content == "object" && "url" in content.content
-                    ? content.content.url
-                    : "";
                 return (
                   <div
                     key={index}
@@ -413,74 +401,90 @@ const Page = () => {
                       </div>
                     </div>
                     {content.type === "title" || content.type === "text" ? (
-                      <div className="w-full bg-primary/20 border border-primary rounded-sm">
-                        <textarea
-                          className="w-full min-h-[80px] flex items-start justify-start text-start  p-2"
-                          placeholder={t(`Block: ${content.type}`)}
-                          value={content.content as string}
-                          onChange={(e) => {
+                      <div>
+                        <CustomMultiLangInput
+                          values={
+                            secondaryContent.filter(
+                              (item) => item.order === content.order
+                            )[0].content as {
+                              en: string;
+                              ru: string;
+                              uz: string;
+                            }
+                          }
+                          onChange={(values) =>
+                            setSecondaryContent((prev) =>
+                              prev.map((Item, index) =>
+                                index === content.order - 1
+                                  ? {
+                                      ...Item,
+                                      content: values,
+                                    }
+                                  : Item
+                              )
+                            )
+                          }
+                          placeholderKey="enterDescription"
+                          isTextArea
+                          className="w-full bg-primary/20 border border-primary rounded-sm"
+                        />
+                      </div>
+                    ) : content.type === "link" ? (
+                      <div className="flex sm:flex-row flex-col gap-2">
+                        <CustomMultiLangInput
+                          values={
+                            typeof content.content === "object" &&
+                            "label" in content.content
+                              ? (content.content.label as {
+                                  en: string;
+                                  ru: string;
+                                  uz: string;
+                                })
+                              : { en: "", ru: "", uz: "" }
+                          }
+                          onChange={(values) =>
                             setSecondaryContent((prev) =>
                               prev.map((item, index) =>
                                 index === content.order - 1
                                   ? {
                                       ...item,
-                                      content: e.target.value,
+                                      content: {
+                                        ...item.content,
+                                        label: values,
+                                      },
                                     }
                                   : item
                               )
-                            );
-                          }}
+                            )
+                          }
+                          placeholderKey="enterUrlName"
+                          wrapperClassName="sm:w-1/2 w-full"
                         />
-                      </div>
-                    ) : content.type === "link" ? (
-                      <div className="flex sm:flex-row flex-col gap-2">
-                        <div className="sm:w-1/2 w-full bg-primary/20 border border-primary rounded-sm">
-                          <input
-                            type="text"
-                            className="w-full min-h-[40px] p-2"
-                            placeholder={t(`Link url`)}
-                            value={label}
-                            onChange={(e) => {
-                              setSecondaryContent((prev) =>
-                                prev.map((item, index) =>
-                                  index === content.order - 1 &&
-                                  typeof item.content === "object"
-                                    ? {
-                                        ...item,
-                                        content: {
-                                          ...item.content,
-                                          label: e.target.value,
-                                        },
-                                      }
-                                    : item
-                                )
-                              );
-                            }}
-                          />
-                        </div>
-                        <div className="sm:w-1/2 w-full bg-primary/20 border border-primary rounded-sm">
-                          <input
-                            type="text"
-                            className="w-full min-h-[40px] p-2"
-                            placeholder={t(`Link name`)}
-                            value={url}
-                            onChange={(e) => {
-                              setSecondaryContent((prev) =>
-                                prev.map((item, index) =>
-                                  index === content.order - 1 &&
-                                  typeof item.content === "object"
-                                    ? {
-                                        ...item,
-                                        content: {
-                                          ...item.content,
-                                          url: e.target.value,
-                                        },
-                                      }
-                                    : item
-                                )
-                              );
-                            }}
-                          />
+                        <div className="sm:w-1/2 w-full flex items-end">
+                          <div className="w-full bg-primary/20 border border-primary rounded-sm">
+                            <input
+                              type="text"
+                              className="w-full min-h-[40px] p-2"
+                              placeholder={t(`Link name`)}
+                              // value={url}
+                              onChange={(e) => {
+                                setSecondaryContent((prev) =>
+                                  prev.map((item, index) =>
+                                    index === content.order - 1 &&
+                                    typeof item.content === "object"
+                                      ? {
+                                          ...item,
+                                          content: {
+                                            ...item.content,
+                                            url: e.target.value,
+                                          },
+                                        }
+                                      : item
+                                  )
+                                );
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
                     ) : content.type === "image" ? (
@@ -546,8 +550,12 @@ const Page = () => {
                   className="rounded-sm cursor-pointer"
                   onClick={() => setPublishORSubmit("publish")}
                   disabled={
-                    !mainTitle ||
-                    !description ||
+                    !titles.ru ||
+                    !titles.en ||
+                    !titles.uz ||
+                    !descriptions.ru ||
+                    !descriptions.en ||
+                    !descriptions.uz ||
                     !mainUrls?.url ||
                     !link ||
                     !slug
@@ -556,52 +564,94 @@ const Page = () => {
                   {t("Publish")}
                 </Button>
               </DialogTrigger>
-              {responseStatus === "Published" ? null : (
-                <DialogTrigger asChild>
-                  <Button
-                    type="button"
-                    className="rounded-sm cursor-pointer"
-                    onClick={() => setPublishORSubmit("submit")}
-                    disabled={
-                      !mainTitle ||
-                      !description ||
-                      !mainUrls?.url ||
-                      !link ||
-                      !slug
-                    }
-                  >
-                    {t("Submit")}
-                  </Button>
-                </DialogTrigger>
-              )}
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  className="rounded-sm cursor-pointer"
+                  onClick={() => setPublishORSubmit("submit")}
+                  disabled={
+                    !titles.ru ||
+                    !titles.en ||
+                    !titles.uz ||
+                    !descriptions.ru ||
+                    !descriptions.en ||
+                    !descriptions.uz ||
+                    !mainUrls?.url ||
+                    !link ||
+                    !slug
+                  }
+                >
+                  {t("Submit")}
+                </Button>
+              </DialogTrigger>
               <DialogOverlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000]" />
               <DialogContent
                 aria-description="form values"
-                className="md:min-w-[700px] w-[80vw] md:max-w-auto !max-w-[500px] z-[10001] sm:p-4 p-2"
+                className="md:min-w-auto !w-[80vw] md:max-w-auto !max-w-[1500px] z-[10001] sm:p-4 p-2"
               >
                 <DialogTitle className="lg:text-2xl sm:text-xl text-lg font-semibold">
                   {t("Form Values")}
                 </DialogTitle>
                 <div className="w-full flex flex-col gap-2">
                   <div className="p-2 rounded-md border border-primary flex flex-col justify-between gap-2 relative min-h-[145px]">
-                    <div className="lg:text-xl text-lg font-bold">
+                    <div className="lg:text-xl text-lg font-bold mb-2">
                       {t("Main content")}
                     </div>
                     <div className="flex sm:flex-row flex-col justify-between gap-2">
-                      <div className="flex flex-col gap-2 w-[80%] sm:max-w-[calc(100%-130px)]">
+                      <div className="flex flex-col gap-4 sm:w-[calc(100%-170px)]">
                         <div>
-                          <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
-                            <span className="font-semibold">{t("Title")}</span>:{" "}
-                            {mainTitle}
-                          </span>
+                          <div className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20 inline-block">
+                            <div className="flex">
+                              <span className="font-semibold">
+                                {t("Title")}:
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {titles.en}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  en
+                                </span>
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {titles.ru}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  ru
+                                </span>
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {titles.uz}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  uz
+                                </span>
+                              </span>
+                            </div>
+                          </div>
                         </div>
                         <div>
-                          <span className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20">
-                            <span className="font-semibold">
-                              {t("Description")}
-                            </span>
-                            : {description}
-                          </span>
+                          <div className="px-2 py-0.5 rounded-sm bg-primary/40 dark:bg-primary/20 inline-block">
+                            <div className="flex">
+                              <span className="font-semibold">
+                                {t("Description")}:
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {descriptions.en}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  en
+                                </span>
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {descriptions.ru}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  ru
+                                </span>
+                              </span>
+                              <span className="flex relative ml-2 px-2 bg-primary/30 border border-primary rounded-md">
+                                {descriptions.uz}
+                                <span className="absolute left-0 bottom-[100%] bg-primary/50 text-sm px-1 rounded-t-sm">
+                                  uz
+                                </span>
+                              </span>
+                            </div>
+                          </div>
                         </div>
                         <div className="flex sm:flex-row flex-col gap-2 sm:items-center">
                           <div>
@@ -622,7 +672,7 @@ const Page = () => {
                       </div>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <button className="sm:absolute relative sm:top-2 sm:right-2 flex flex-col gap-2 items-start justify-center w-full sm:w-[127px] sm:cursor-pointer">
+                          <button className="sm:absolute relative sm:top-2 sm:right-2 flex flex-col gap-2 items-start justify-center w-full sm:w-[155px] sm:cursor-pointer">
                             <div className="absolute top-2 left-2 sm:px-1 px-2 sm:py-0 py-0.5 sm:rounded-xs rounded-sm sm:border border-primary bg-white dark:bg-black overflow-hidden z-10 sm:h-[18px] flex items-center">
                               <div className="absolute inset-0 sm:bg-primary/70 bg-primary/40 dark:bg-primary/20"></div>
                               <span className="relative z-10 text-sm font-semibold">

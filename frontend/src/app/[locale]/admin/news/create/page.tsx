@@ -70,7 +70,6 @@ const Page = () => {
   }>();
   const [secondaryUrls, setSecondaryUrls] = useState<{ url: string }[]>([]);
   const [submitted, setSubmitted] = useState(false);
-  console.log("secContent", secContent);
 
   const [titles, setTitles] = useState({
     en: "",
@@ -251,7 +250,7 @@ const Page = () => {
 
           <div className="flex sm:flex-row flex-col items-center gap-2">
             <div className="sm:w-1/2 w-full">
-              <div className="mb-1">Title*</div>
+              <div className="mb-1">{t("Title")}*</div>
 
               <CustomMultiLangInput
                 values={titles}

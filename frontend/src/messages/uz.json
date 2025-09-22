@@ -182,6 +182,8 @@
         "enterDescription": "{lang} tavsifini kiriting",
         "enterUrlName": "{lang} havola nomini kiriting",
         "All News": "Barcha yangiliklar",
-        "News edited successfully": "Yangilik muvaffaqiyatli yangilandi"
+        "News edited successfully": "Yangilik muvaffaqiyatli yangilandi",
+        "Previous": "Oldingi",
+        "Next": "Keyingi"
     }
 }

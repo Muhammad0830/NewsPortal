@@ -182,6 +182,8 @@
         "enterDescription": "Enter {lang} description",
         "enterUrlName": "Enter {lang} url name",
         "All News": "All News",
-        "News edited successfully": "News edited successfully"
+        "News edited successfully": "News edited successfully",
+        "Previous": "Previous",
+        "Next": "Next"
     }
 }

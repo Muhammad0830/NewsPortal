@@ -15,8 +15,6 @@ const Page = () => {
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [page, setPage] = useState(1);
   const limit = 10;
-  // let totalPages = 1;
-  // let totalNews = 0;
   const {
     data: newsData,
     isLoading,

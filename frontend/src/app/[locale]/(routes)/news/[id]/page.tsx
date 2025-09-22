@@ -50,7 +50,7 @@ const Page = () => {
           <div className="h-4 aspect-square">
             <ArrowLeft className="w-full h-full" />
           </div>
-          <span onClick={() => router.push("/news")} className="font-semibold">
+          <span onClick={() => router.back()} className="font-semibold">
             {t("Go back to news")}
           </span>
         </button>

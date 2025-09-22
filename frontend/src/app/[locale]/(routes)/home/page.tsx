@@ -5,7 +5,7 @@ import { ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import { News, Category } from "@/types/types";
+import { Category, News } from "@/types/types";
 import { cn } from "@/lib/cn";
 import { usePathname } from "next/navigation";
 
@@ -17,7 +17,6 @@ const Page = () => {
   const [isPaused, setIsPaused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
-  const [images, setImages] = useState<News[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
   const pathName = usePathname();
@@ -25,17 +24,16 @@ const Page = () => {
 
   const speed = 1.5;
 
-  const { data, isLoading } = useApiQuery<News[]>("/news", ["news"]);
-  const newsData = data?.filter((item, index) => index < 5) || [];
+  const { data, isLoading } = useApiQuery<News[]>("/news/latest", ["latest"]);
+  const images = data ? [...data, ...data] : [];
 
   const { data: categoriesData, isLoading: isCategoryLoading } = useApiQuery<
     Category[]
   >("/news/categories", ["category"]);
 
   useEffect(() => {
-    setImages([...newsData, ...newsData]);
     if (categoriesData) setCategories(categoriesData);
-  }, [data, categoriesData]); // eslint-disable-line
+  }, [categoriesData]);
 
   useEffect(() => {
     setWidth(window.innerWidth);
@@ -138,7 +136,7 @@ const Page = () => {
           >
             {images.map((img, index) => (
               <Link
-                href={`/news/${index}`}
+                href={`/news/${img.id}`}
                 key={index}
                 className="group relative flex-shrink-0 aspect-video cursor-pointer border rounded-lg overflow-hidden border-black dark:border-white sacle-[1]"
                 style={{

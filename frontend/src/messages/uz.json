@@ -91,7 +91,10 @@
         "Opinion": "Fikr",
         "Read more": "Davomini o‘qish",
         "Go back to news": "Yangiliklarga qaytish",
-        "No such news found": "Bunday yangilik topilmadi"
+        "No such news found": "Bunday yangilik topilmadi",
+        "totalNews": "Barcha yangiliklar soni",
+        "Previous": "Oldingi",
+        "Next": "Keyingi"
     },
     "Auth": {
         "Sign Up": "Ro‘yxatdan o‘tish",

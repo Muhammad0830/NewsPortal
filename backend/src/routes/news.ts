@@ -17,12 +17,11 @@ newsRouter.get("/", async (req: any, res: any) => {
   try {
     const { page, limit } = req.query;
     const rows = await query<any[]>(
-      `SELECT * FROM news LIMIT ${limit} OFFSET ${(page - 1) * limit}`
+      `SELECT * FROM news order by created_at desc LIMIT ${limit} OFFSET ${(page - 1) * limit}`
     );
     const totalResult = await query<any>("SELECT COUNT(*) as count FROM news");
     const totalNews = totalResult[0].count;
     const totalPages = Math.ceil(totalNews / limit);
-    console.log('totalPages', totalPages);
 
     if (rows.length === 0) {
       res.status(404).json({ error: "No news found" });
@@ -38,17 +37,37 @@ newsRouter.get("/", async (req: any, res: any) => {
   }
 });
 
+newsRouter.get("/latest", async (req: any, res: any) => {
+  try {
+    const rows = await query<any[]>(
+      `SELECT * FROM news order by created_at desc limit 5`
+    );
+
+    if (rows.length === 0) {
+      res.status(404).json({ error: "No news found" });
+    }
+
+    res.status(200).json(rows);
+  } catch (error: any) {
+    if (res.status) {
+      res.status(500).json({ error: error.message });
+    } else {
+      throw new Error(error.message);
+    }
+  }
+});
+
 newsRouter.get("/each/:id", async (req: any, res: any) => {
   try {
     const newsId = req.params.id;
 
     const rows = await query<any[]>(
       `SELECT n.id, n.title, n.image, n.created_at, n.category, n.description, n.status, n.slug, n.redirectLink,
-              c.type, c.content, c.\`order\`
-       FROM news n
-       JOIN contents c ON n.id = c.newsId
-       WHERE n.id = ?
-       ORDER BY c.\`order\``,
+        c.type, c.content, c.\`order\`
+        FROM news n
+        JOIN contents c ON n.id = c.newsId
+        WHERE n.id = ?
+        ORDER BY c.\`order\``,
       [newsId]
     );
 

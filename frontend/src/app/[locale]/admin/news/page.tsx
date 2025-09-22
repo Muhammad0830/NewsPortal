@@ -8,16 +8,20 @@ import { News } from "@/types/types";
 import useApiQuery from "@/hooks/useApiQiery";
 import { useRouter } from "@/i18n/navigation";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/cn";
 
 const Page = () => {
   const t = useTranslations("adminNews");
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [data, setData] = useState<News[]>([]);
+  const [page, setPage] = useState(1);
+  const limit = 12;
+  const totalPages = 10;
   const {
     data: newsData,
     isLoading,
     refetch,
-  } = useApiQuery<News[]>("/news", ["news"]);
+  } = useApiQuery<News[]>(`/news?page=${page}&limit=${limit}`, ["news", page, limit]);
   const router = useRouter();
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
@@ -59,8 +63,59 @@ const Page = () => {
         />
       </div>
 
-      <div className="relative z-0 mb-4">
+      <div className="relative z-0 mb-2">
         <DataTable columns={columns(refetch, locale)} data={data} />
+      </div>
+
+      <div className="flex gap-2 items-start justify-end mb-4">
+        <div className="flex items-center gap-2 justify-end">
+          <button
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+            className={cn(
+              "border border-primary bg-primary/40 dark:bg-primary/20 hover:bg-primary/60 dark:hover:bg-primary/10 cursor-pointer px-2 py-0.5 rounded-sm ",
+              page === 1
+                ? "opacity-50 cursor-default hover:bg-primary/40 dark:hover:bg-primary/20"
+                : ""
+            )}
+          >
+            {t("Previous")}
+          </button>
+          <button
+            onClick={() => setPage(1)}
+            className={cn(
+              "border border-primary bg-primary/40 dark:bg-primary/20 hover:bg-primary/60 dark:hover:bg-primary/10 cursor-pointer px-2 py-0.5 rounded-sm ",
+              page === 1 ? "hidden" : "flex"
+            )}
+          >
+            1
+          </button>
+          <div className="px-2 py-0.5 border border-primary rounded-sm cursor-default">
+            {page}
+          </div>
+          <button
+            onClick={() => setPage(totalPages)}
+            disabled={page === totalPages}
+            className={cn(
+              "border border-primary bg-primary/40 dark:bg-primary/20 hover:bg-primary/60 dark:hover:bg-primary/10 cursor-pointer px-2 py-0.5 rounded-sm ",
+              page === totalPages ? "hidden" : "flex"
+            )}
+          >
+            {totalPages}
+          </button>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages}
+            className={cn(
+              "border border-primary bg-primary/40 dark:bg-primary/20 hover:bg-primary/60 dark:hover:bg-primary/10 cursor-pointer px-2 py-0.5 rounded-sm ",
+              page === totalPages
+                ? "opacity-50 cursor-default hover:bg-primary/40 dark:hover:bg-primary/20"
+                : ""
+            )}
+          >
+            {t("Next")}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -15,13 +15,20 @@ const newsRouter = express.Router();
 
 newsRouter.get("/", async (req: any, res: any) => {
   try {
-    const rows = await query<any[]>("SELECT * FROM news");
+    const { page, limit } = req.query;
+    const rows = await query<any[]>(
+      `SELECT * FROM news LIMIT ${limit} OFFSET ${(page - 1) * limit}`
+    );
+    const totalResult = await query<any>("SELECT COUNT(*) as count FROM news");
+    const totalNews = totalResult[0].count;
+    const totalPages = Math.ceil(totalNews / limit);
+    console.log('totalPages', totalPages);
 
     if (rows.length === 0) {
       res.status(404).json({ error: "No news found" });
     }
 
-    res.status(200).json(rows);
+    res.status(200).json({ news: rows, page, limit, totalNews, totalPages });
   } catch (error: any) {
     if (res.status) {
       res.status(500).json({ error: error.message });

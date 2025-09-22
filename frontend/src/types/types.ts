@@ -12,6 +12,14 @@ export interface News {
   redirectLink?: string;
 }
 
+export interface NewsResponse {
+  news: News[];
+  page: number;
+  limit: number;
+  totalNews: number;
+  totalPages: number;
+}
+
 export interface Category {
   id: number;
   name: string;

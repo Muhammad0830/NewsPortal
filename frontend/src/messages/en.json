@@ -184,6 +184,7 @@
         "All News": "All News",
         "News edited successfully": "News edited successfully",
         "Previous": "Previous",
-        "Next": "Next"
+        "Next": "Next",
+        "totalNews": "Total news"
     }
 }

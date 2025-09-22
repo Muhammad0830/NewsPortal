@@ -91,7 +91,10 @@
         "Opinion": "Мнение",
         "Read more": "Читать далее",
         "Go back to news": "Вернуться к новостям",
-        "No such news found": "Таких новостей не найдено"
+        "No such news found": "Таких новостей не найдено",
+        "totalNews": "Всего новостей",
+        "Previous": "Предыдущая",
+        "Next": "Следующая"
     },
     "Auth": {
         "Sign Up": "Регистрация",

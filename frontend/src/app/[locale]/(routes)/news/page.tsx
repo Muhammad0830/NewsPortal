@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import useApiQuery from "@/hooks/useApiQiery";
 import { cn } from "@/lib/cn";
-import { Category, News } from "@/types/types";
+import { Category, NewsResponse } from "@/types/types";
 import { Check, Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
@@ -17,21 +17,25 @@ const Page = () => {
   const t = useTranslations("News");
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [news, setNews] = useState<News[]>([]);
+  const [page, setPage] = useState(1);
+  const limit = 12;
 
   const { data, isLoading } = useApiQuery<Category[]>("/news/categories", [
     "Category",
   ]);
 
-  const { data: newsData, isLoading: isNewsLoading } = useApiQuery<News[]>(
-    "/news",
-    ["news"]
-  );
+  const { data: newsData, isLoading: isNewsLoading } =
+    useApiQuery<NewsResponse>(`/news?limit=${limit}&page=${page}`, ["news"]);
 
   useEffect(() => {
     if (data) setCategories(data);
-    if (newsData) setNews(newsData);
-  }, [data, newsData]);
+  }, [data]);
+
+  const {
+    news: news,
+    totalNews,
+    totalPages,
+  } = newsData ? newsData : { news: [], totalNews: 0, totalPages: 0 };
 
   if (isLoading || isNewsLoading) return <div>Loading...</div>;
 
@@ -131,6 +135,62 @@ const Page = () => {
             ))}
           </div>
         )}
+
+        <div className="flex gap-2 items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">
+              {t("totalNews")}: {totalNews}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 justify-end">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              className={cn(
+                "border border-primary bg-primary/40 dark:bg-primary/20 hover:bg-primary/60 dark:hover:bg-primary/10 cursor-pointer px-2 py-0.5 rounded-sm ",
+                page === 1
+                  ? "opacity-50 cursor-default hover:bg-primary/40 dark:hover:bg-primary/20"
+                  : ""
+              )}
+            >
+              {t("Previous")}
+            </button>
+            <button
+              onClick={() => setPage(1)}
+              className={cn(
+                "border border-primary bg-primary/40 dark:bg-primary/20 hover:bg-primary/60 dark:hover:bg-primary/10 cursor-pointer px-2 py-0.5 rounded-sm ",
+                page === 1 ? "hidden" : "flex"
+              )}
+            >
+              1
+            </button>
+            <div className="px-2 py-0.5 border border-primary rounded-sm cursor-default">
+              {page}
+            </div>
+            <button
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages}
+              className={cn(
+                "border border-primary bg-primary/40 dark:bg-primary/20 hover:bg-primary/60 dark:hover:bg-primary/10 cursor-pointer px-2 py-0.5 rounded-sm ",
+                page === totalPages ? "hidden" : "flex"
+              )}
+            >
+              {totalPages}
+            </button>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+              className={cn(
+                "border border-primary bg-primary/40 dark:bg-primary/20 hover:bg-primary/60 dark:hover:bg-primary/10 cursor-pointer px-2 py-0.5 rounded-sm ",
+                page === totalPages
+                  ? "opacity-50 cursor-default hover:bg-primary/40 dark:hover:bg-primary/20"
+                  : ""
+              )}
+            >
+              {t("Next")}
+            </button>
+          </div>
+        </div>
       </section>
     </div>
   );

@@ -1,10 +1,10 @@
 "use client";
 import FilterDropdown from "@/components/FilterDropdown";
 import { useTranslations } from "next-intl";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { DataTable } from "@/components/DataTable";
 import { columns } from "./TableColumns";
-import { News } from "@/types/types";
+import { NewsResponse } from "@/types/types";
 import useApiQuery from "@/hooks/useApiQiery";
 import { useRouter } from "@/i18n/navigation";
 import { usePathname } from "next/navigation";
@@ -13,24 +13,28 @@ import { cn } from "@/lib/cn";
 const Page = () => {
   const t = useTranslations("adminNews");
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
-  const [data, setData] = useState<News[]>([]);
   const [page, setPage] = useState(1);
-  const limit = 12;
-  const totalPages = 10;
+  const limit = 10;
+  // let totalPages = 1;
+  // let totalNews = 0;
   const {
     data: newsData,
     isLoading,
     refetch,
-  } = useApiQuery<News[]>(`/news?page=${page}&limit=${limit}`, ["news", page, limit]);
+  } = useApiQuery<NewsResponse>(`/news?page=${page}&limit=${limit}`, [
+    "news",
+    page,
+    limit,
+  ]);
   const router = useRouter();
   const pathname = usePathname();
   const locale = pathname.split("/")[1];
 
-  useEffect(() => {
-    if (newsData) {
-      setData(newsData);
-    }
-  }, [newsData]);
+  const {
+    news: data,
+    totalNews,
+    totalPages,
+  } = newsData ? newsData : { news: [], totalNews: 0, totalPages: 0 };
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -67,7 +71,12 @@ const Page = () => {
         <DataTable columns={columns(refetch, locale)} data={data} />
       </div>
 
-      <div className="flex gap-2 items-start justify-end mb-4">
+      <div className="flex gap-2 items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">
+            {t("totalNews")}: {totalNews}
+          </span>
+        </div>
         <div className="flex items-center gap-2 justify-end">
           <button
             onClick={() => setPage(page - 1)}

@@ -184,6 +184,7 @@
         "All News": "Barcha yangiliklar",
         "News edited successfully": "Yangilik muvaffaqiyatli yangilandi",
         "Previous": "Oldingi",
-        "Next": "Keyingi"
+        "Next": "Keyingi",
+        "totalNews": "Barcha yangiliklar soni"
     }
 }

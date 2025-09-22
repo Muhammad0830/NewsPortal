@@ -26,7 +26,7 @@ authRouter.post(
     const { email, password, name } = req.body as {
       email: string;
       password: string;
-      name?: string;
+      name: string;
     };
 
     const role = "user"; //signup is possible only for users --- admins are created at adminPage

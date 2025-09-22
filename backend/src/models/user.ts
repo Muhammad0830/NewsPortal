@@ -18,12 +18,13 @@ export async function findUserById(id: number) {
 export async function createUser(
   email: string,
   passwordHash: string,
-  name?: string,
+  name: string,
   role: "admin" | "user" = "user"
 ) {
   const res: any = await query(
-    "INSERT INTO users (email, password_hash, name, role) VALUES (?, ?, ?)",
-    [email, passwordHash, name ?? null, role]
+    "INSERT INTO users (email, password_hash, name, role) VALUES (?, ?, ?, ?)",
+    [email, passwordHash, name, role]
   );
+
   return res.insertId as number;
 }
